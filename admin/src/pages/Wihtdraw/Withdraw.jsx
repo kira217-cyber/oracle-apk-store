@@ -1,13 +1,13 @@
 import React from 'react';
 
-const IsoApp = () => {
+const Withdraw = () => {
     return (
         <div>
-             <h1 className="text-2xl text-orange-600 text-center min-h-screen">
+             <h1 className="text-2xl text-black text-center min-h-screen">
         No Include Api!
       </h1>
         </div>
     );
 };
 
-export default IsoApp;
+export default Withdraw;

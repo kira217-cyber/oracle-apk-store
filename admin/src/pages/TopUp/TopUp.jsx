@@ -1,6 +1,6 @@
 import React from "react";
 
-const WindowsSoft = () => {
+const TopUp = () => {
   return (
     <div>
       <h1 className="text-2xl text-red-600 text-center min-h-screen">
@@ -10,4 +10,4 @@ const WindowsSoft = () => {
   );
 };
 
-export default WindowsSoft;
+export default TopUp;
