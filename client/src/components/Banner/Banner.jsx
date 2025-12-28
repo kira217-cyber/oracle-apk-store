@@ -1,120 +1,115 @@
-import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
 import { useNavigate } from "react-router";
+import { IoMdDownload } from "react-icons/io";
+
 const bannerData = [
   {
     id: 1,
-    logoUrl:
-      "https://i.ibb.co/album/hd-google-play-playstore-logo-symbol-png-701751694777134cuw3jc7voo.png",
-    title: "This is Oracle Store",
-    bgUrl: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f",
+    title: "Oracle Store",
+    subtitle: "Premium Apps & Games",
+    bgUrl:
+      "https://img.freepik.com/free-vector/gradient-black-technology-background_23-2149209060.jpg",
   },
   {
     id: 2,
-    logoUrl:
-      "https://i.ibb.co/album/hd-google-play-playstore-logo-symbol-png-701751694777134cuw3jc7voo.png",
-    title: "Amazing Apps Here",
-    bgUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475",
+    title: "Safe & Fast",
+    subtitle: "Latest APK Downloads",
+    bgUrl:
+      "https://img.freepik.com/free-vector/gradient-hexagonal-background_23-2148954968.jpg",
   },
   {
     id: 3,
-    logoUrl:
-      "https://i.ibb.co/album/hd-google-play-playstore-logo-symbol-png-701751694777134cuw3jc7voo.png",
-    title: "Oracle Store Downloads",
-    bgUrl: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d",
-  },
-  {
-    id: 4,
-    logoUrl:
-      "https://i.ibb.co/album/hd-google-play-playstore-logo-symbol-png-701751694777134cuw3jc7voo.png",
-    title: "Best Games & Apps",
-    bgUrl: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+    title: "Download Now",
+    subtitle: "100% Trusted Apps",
+    bgUrl:
+      "https://img.freepik.com/free-vector/3d-style-black-background-with-paper-layer_206725-669.jpg",
   },
 ];
 
 const Banner = () => {
-  const [index, setIndex] = useState(0);
   const navigate = useNavigate();
 
-  // Auto slide every 5 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % bannerData.length);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [bannerData.length]);
-
-  const banner = bannerData[index];
-
   return (
-    <div className="relative w-full h-[220px] sm:h-[280px] md:h-[360px] lg:h-[420px] overflow-hidden  shadow-lg">
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={banner.id}
-          initial={{ opacity: 0, scale: 1.08 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.7, ease: "easeInOut" }}
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${banner.bgUrl})` }}
-        >
-          {/* Dark Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/30" />
+    <div className="w-full h-[220px] sm:h-[260px] md:h-[340px] lg:h-[400px]  overflow-hidden shadow-xl">
+      {/* Light Animations */}
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse {
+          0%, 100% { box-shadow: 0 0 15px rgba(34, 197, 94, 0.5); }
+          50% { box-shadow: 0 0 30px rgba(34, 197, 94, 0.8); }
+        }
+        .animate-fade { animation: fadeIn 0.8s ease-out forwards; }
+        .animate-pulse { animation: pulse 2s infinite; }
+      `}</style>
 
-          {/* Content */}
-          <div className="relative md:max-w-7xl md:mx-auto z-10 h-full flex items-center justify-between px-4 sm:px-8 md:px-12">
-            {/* LEFT CONTENT */}
-            <motion.div
-              initial={{ x: -40, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.6 }}
-              className="text-white max-w-[70%] sm:max-w-xl"
+      <Swiper
+        modules={[Autoplay, Pagination]}
+        autoplay={{ delay: 3500, disableOnInteraction: false }}
+        pagination={{ clickable: true }}
+        loop
+        speed={800}
+        className="h-full"
+      >
+        {bannerData.map((banner) => (
+          <SwiperSlide key={banner.id}>
+            <div
+              className="h-full bg-cover bg-center relative flex items-center justify-center"
+              style={{ backgroundImage: `url(${banner.bgUrl})` }}
             >
-              <h1 className="text-lg sm:text-2xl md:text-4xl font-bold leading-tight">
-                {banner.title}
-              </h1>
-              <p className="hidden sm:block mt-2 text-gray-200 text-sm md:text-base">
-                Download apps & games safely from Oracle Store
-              </p>
-            </motion.div>
+              {/* Dark Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-purple-900/40 to-black/70" />
 
-            {/* RIGHT CONTENT */}
-            <motion.div
-              initial={{ x: 40, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.6 }}
-              className="flex flex-col items-center gap-3"
-            >
-              <img
-                src={banner.logoUrl}
-                alt="App Logo"
-                className="w-14 sm:w-20 md:w-28 rounded-xl bg-white p-1 shadow-xl"
-              />
+              <div className="flex items-center gap-4 md:gap-200 relative text-center px-4 sm:px-8">
+                {/* Text Content */}
+                <div className="space-y-2 sm:space-y-3 animate-fade">
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white drop-shadow-lg">
+                    {banner.title}
+                  </h1>
+                  <p className="text-base sm:text-lg md:text-xl text-gray-200">
+                    {banner.subtitle}
+                  </p>
+                </div>
 
-              <button
-                onClick={() => navigate(`/app/${banner.id}`)}
-                className="px-5 py-2 text-sm sm:text-base rounded-full bg-sky-500 hover:bg-sky-600 active:scale-95 cursor-pointer text-white font-semibold transition-all"
-              >
-                Download
-              </button>
-            </motion.div>
-          </div>
-        </motion.div>
-      </AnimatePresence>
+                {/* Button + Logo Stack (Mobile Friendly) */}
+                <div
+                  className="mt-4 sm:mt-6 flex flex-col items-center gap-4 animate-fade"
+                  style={{ animationDelay: "0.4s" }}
+                >
+                  <img
+                    src="https://i.ibb.co/DDn0L7tp/logo-design-technology-company-vector-illustration-1253202-4950-ezgif-com-avif-to-jpg-converter.jpg"
+                    alt="Oracle Store"
+                    className="w-22 md:w-42 rounded-lg shadow-2xl border-4 border-white/20"
+                  />{" "}
+                  <button
+                    onClick={() => navigate(`/app/${banner.id}`)}
+                    className="px-4 py-2 md:px-6 md:py-4 text-sm cursor-pointer md:text-lg font-bold text-white bg-gradient-to-r from-green-500 to-emerald-600 rounded-full hover:from-green-600 hover:to-emerald-700 transform hover:scale-105 transition-all animate-pulse flex items-center gap-2 shadow-xl"
+                  >
+                   <IoMdDownload />
 
-      {/* DOT INDICATORS */}
-      <div className="absolute bottom-3 cursor-pointer left-1/2 -translate-x-1/2 flex gap-2 z-20">
-        {bannerData.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => setIndex(i)}
-            className={`w-3 cursor-pointer h-3 rounded-full transition-all duration-300 ${
-              index === i ? "bg-green-700 scale-110" : "bg-white/60"
-            }`}
-          />
+                    Download
+                  </button>
+                </div>
+              </div>
+            </div>
+          </SwiperSlide>
         ))}
-      </div>
+      </Swiper>
+
+      {/* Pagination Style */}
+      <style>{`
+        .swiper-pagination-bullet {
+          background: rgba(255,255,255,0.5);
+        }
+        .swiper-pagination-bullet-active {
+          background: #10b981;
+        }
+      `}</style>
     </div>
   );
 };

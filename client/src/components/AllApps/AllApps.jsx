@@ -1,5 +1,7 @@
 import React from "react";
 import { Link } from "react-router";
+import { IoIosApps } from "react-icons/io";
+import { FaGooglePlay } from "react-icons/fa";
 
 const AllApps = () => {
   const categories = [
@@ -21,21 +23,104 @@ const AllApps = () => {
   ];
 
   const apps = [
-    { id: 1, name: "Wuthering Waves", image: "https://i.ibb.co.com/5XmZSPWz/detailed-esports-gaming-logo-template-1029473-588861-ezgif-com-avif-to-jpg-converter.jpg", rating: 4.3 },
-    { id: 2, name: "ODIN", image: "https://i.ibb.co.com/Q3FdLyN2/logo-design-technology-company-vector-illustration-1253202-6803-ezgif-com-avif-to-jpg-converter.jpg", rating: 3.6 },
-    { id: 3, name: "CookieRun", image: "https://i.ibb.co.com/DDn0L7tp/logo-design-technology-company-vector-illustration-1253202-4950-ezgif-com-avif-to-jpg-converter.jpg", rating: 4.8 },
-    { id: 4, name: "BrownDust2", image: "https://i.ibb.co.com/5XmZSPWz/detailed-esports-gaming-logo-template-1029473-588861-ezgif-com-avif-to-jpg-converter.jpg", rating: 4.1 },
-    { id: 5, name: "Whiteout Survival", image: "https://i.ibb.co.com/XrR0LRdp/hd-google-play-playstore-logo-symbol-png-701751694777134cuw3jc7voo-removebg-preview.png", rating: 4.3 },
-    { id: 6, name: "Genshin Impact", image: "https://i.ibb.co.com/5XmZSPWz/detailed-esports-gaming-logo-template-1029473-588861-ezgif-com-avif-to-jpg-converter.jpg", rating: 4.3 },
-    { id: 7, name: "Journey of Monarch", image: "https://i.ibb.co.com/DDn0L7tp/logo-design-technology-company-vector-illustration-1253202-4950-ezgif-com-avif-to-jpg-converter.jpg", rating: 4.6 },
-
-    { id: 8, name: "Wuthering Waves", image: "https://i.ibb.co.com/5XmZSPWz/detailed-esports-gaming-logo-template-1029473-588861-ezgif-com-avif-to-jpg-converter.jpg", rating: 4.3 },
-    { id: 9, name: "ODIN", image: "https://i.ibb.co.com/DDn0L7tp/logo-design-technology-company-vector-illustration-1253202-4950-ezgif-com-avif-to-jpg-converter.jpg", rating: 3.6 },
-    { id: 10, name: "CookieRun", image: "https://i.ibb.co.com/G4yyryTZ/cyberpunk-assassins-neon-visage-862264-8569-ezgif-com-avif-to-jpg-converter.jpg", rating: 4.8 },
-    { id: 11, name: "BrownDust2", image: "https://i.ibb.co.com/5XmZSPWz/detailed-esports-gaming-logo-template-1029473-588861-ezgif-com-avif-to-jpg-converter.jpg", rating: 4.1 },
-    { id: 12, name: "Whiteout Survival", image: "https://i.ibb.co.com/XrR0LRdp/hd-google-play-playstore-logo-symbol-png-701751694777134cuw3jc7voo-removebg-preview.png", rating: 4.3 },
-    { id: 13, name: "Genshin Impact", image: "https://i.ibb.co.com/5XmZSPWz/detailed-esports-gaming-logo-template-1029473-588861-ezgif-com-avif-to-jpg-converter.jpg", rating: 4.3 },
-    { id: 14, name: "Journey of Monarch", image: "https://i.ibb.co.com/DDn0L7tp/logo-design-technology-company-vector-illustration-1253202-4950-ezgif-com-avif-to-jpg-converter.jpg", rating: 4.6 },
+    {
+      id: 1,
+      name: "Wuthering Waves",
+      image:
+        "https://i.ibb.co/5XmZSPWz/detailed-esports-gaming-logo-template-1029473-588861-ezgif-com-avif-to-jpg-converter.jpg",
+      rating: 4.3,
+    },
+    {
+      id: 2,
+      name: "ODIN",
+      image:
+        "https://i.ibb.co/Q3FdLyN2/logo-design-technology-company-vector-illustration-1253202-6803-ezgif-com-avif-to-jpg-converter.jpg",
+      rating: 3.6,
+    },
+    {
+      id: 3,
+      name: "CookieRun",
+      image:
+        "https://i.ibb.co/DDn0L7tp/logo-design-technology-company-vector-illustration-1253202-4950-ezgif-com-avif-to-jpg-converter.jpg",
+      rating: 4.8,
+    },
+    {
+      id: 4,
+      name: "BrownDust2",
+      image:
+        "https://i.ibb.co/5XmZSPWz/detailed-esports-gaming-logo-template-1029473-588861-ezgif-com-avif-to-jpg-converter.jpg",
+      rating: 4.1,
+    },
+    {
+      id: 5,
+      name: "Whiteout Survival",
+      image:
+        "https://i.ibb.co/XrR0LRdp/hd-google-play-playstore-logo-symbol-png-701751694777134cuw3jc7voo-removebg-preview.png",
+      rating: 4.3,
+    },
+    {
+      id: 6,
+      name: "Genshin Impact",
+      image:
+        "https://i.ibb.co/5XmZSPWz/detailed-esports-gaming-logo-template-1029473-588861-ezgif-com-avif-to-jpg-converter.jpg",
+      rating: 4.3,
+    },
+    {
+      id: 7,
+      name: "Journey of Monarch",
+      image:
+        "https://i.ibb.co/DDn0L7tp/logo-design-technology-company-vector-illustration-1253202-4950-ezgif-com-avif-to-jpg-converter.jpg",
+      rating: 4.6,
+    },
+    {
+      id: 8,
+      name: "Wuthering Waves",
+      image:
+        "https://i.ibb.co/5XmZSPWz/detailed-esports-gaming-logo-template-1029473-588861-ezgif-com-avif-to-jpg-converter.jpg",
+      rating: 4.3,
+    },
+    {
+      id: 9,
+      name: "ODIN",
+      image:
+        "https://i.ibb.co/DDn0L7tp/logo-design-technology-company-vector-illustration-1253202-4950-ezgif-com-avif-to-jpg-converter.jpg",
+      rating: 3.6,
+    },
+    {
+      id: 10,
+      name: "CookieRun",
+      image:
+        "https://i.ibb.co/G4yyryTZ/cyberpunk-assassins-neon-visage-862264-8569-ezgif-com-avif-to-jpg-converter.jpg",
+      rating: 4.8,
+    },
+    {
+      id: 11,
+      name: "BrownDust2",
+      image:
+        "https://i.ibb.co/5XmZSPWz/detailed-esports-gaming-logo-template-1029473-588861-ezgif-com-avif-to-jpg-converter.jpg",
+      rating: 4.1,
+    },
+    {
+      id: 12,
+      name: "Whiteout Survival",
+      image:
+        "https://i.ibb.co/XrR0LRdp/hd-google-play-playstore-logo-symbol-png-701751694777134cuw3jc7voo-removebg-preview.png",
+      rating: 4.3,
+    },
+    {
+      id: 13,
+      name: "Genshin Impact",
+      image:
+        "https://i.ibb.co/5XmZSPWz/detailed-esports-gaming-logo-template-1029473-588861-ezgif-com-avif-to-jpg-converter.jpg",
+      rating: 4.3,
+    },
+    {
+      id: 14,
+      name: "Journey of Monarch",
+      image:
+        "https://i.ibb.co/DDn0L7tp/logo-design-technology-company-vector-illustration-1253202-4950-ezgif-com-avif-to-jpg-converter.jpg",
+      rating: 4.6,
+    },
   ];
 
   const chunkApps = (arr, size) =>
@@ -43,48 +128,82 @@ const AllApps = () => {
       (acc, _, i) => (i % size ? acc : [...acc, arr.slice(i, i + size)]),
       []
     );
-
   const rows = chunkApps(apps, 7);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 my-10 mt-10">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div className="bg-gradient-to-r from-green-400 to-green-700 text-white px-4 py-2 rounded-md font-bold shadow">
-          App Categories
+    <div className="mt-10">
+
+      {/* mobile Header */}
+      <div className="flex flex-col gap-2 md:hidden md:flex-row md:items-stretch md:gap-3">
+        <div className="flex gap-2 md:flex-[2]">
+          <div className="flex-1 gradient-animate text-white px-2 py-1 md:px-6 md:py-3 rounded-md font-bold shadow flex items-center justify-center">
+            <span className="flex gap-2 items-center">
+              Oracle Store <FaGooglePlay size={20} />
+            </span>
+          </div>
+
+          <div className="flex-1 rgb-badge text-white px-2 py-1 md:px-6 md:py-3 rounded-md font-bold shadow flex items-center justify-center">
+            <span className="flex gap-2 items-center">
+              ALL APP <IoIosApps size={20} />
+            </span>
+          </div>
         </div>
 
-        <div className="bg-gradient-to-r from-blue-400 to-blue-700 text-white px-4 py-2 rounded-md font-bold shadow">
-          ALL APP ▶
+        <div className="md:flex-[8] relative bg-white rounded-md shadow flex items-center justify-center">
+          <img
+            className="h-20 md:h-full w-full object-cover rounded-md"
+            src="https://i.ibb.co.com/5XmZSPWz/detailed-esports-gaming-logo-template-1029473-588861-ezgif-com-avif-to-jpg-converter.jpg"
+            alt="Logo"
+          />
+          <span className="bg-gradient-to-r from-cyan-400 to-pink-500 absolute top-2 right-0 px-3 py-1 text-white font-bold text-sm shadow-lg">
+            Boost
+          </span>
         </div>
       </div>
 
-      <div className="bg-white rounded-b-md py-5">
-        {/* Desktop Version Category Buttons */}
+      {/* desktop Header */}
+      <div className="hidden md:flex items-stretch gap-3">
+        <div className="flex-[2] gradient-animate text-white px-6 py-3 rounded-md font-bold shadow flex items-center justify-center">
+          <span className="flex gap-2 items-center">
+            Oracle Store <FaGooglePlay size={20} />
+          </span>
+        </div>
+
+        <div className="flex-[8] relative bg-white rounded-md shadow flex items-center justify-center">
+          <img
+            className="h-full max-h-14 w-full object-cover rounded-md"
+            src="https://i.ibb.co.com/5XmZSPWz/detailed-esports-gaming-logo-template-1029473-588861-ezgif-com-avif-to-jpg-converter.jpg"
+            alt="Logo"
+          />
+          <span className="bg-gradient-to-r from-cyan-400 to-pink-500 absolute top-1 right-0 px-3 py-1 text-white font-semibold rounded-l-sm text-lg">
+            Boost
+          </span>
+        </div>
+
+        <div className="flex-[2] rgb-badge text-white px-6 py-3 rounded-md font-bold shadow flex items-center justify-center">
+          <span className="flex gap-2 items-center">
+            ALL APP <IoIosApps size={20} />
+          </span>
+        </div>
+      </div>
+      
+      <div className=" rounded-b-md py-5">
+        {/* Categories */}
         <div className=" hidden md:flex flex-wrap gap-4 justify-start mb-6">
-          {[...categories].map((cat, index) => (
+          {categories.map((cat, i) => (
             <button
-              key={index}
-              className="px-6 py-2 rounded-full bg-blue-900 text-white text-sm font-semibold hover:bg-blue-700 transition cursor-pointer"
+              key={i}
+              className="px-6 py-2 rounded-full bg-gray-100 text-black text-sm font-semibold hover:bg-gray-200 transition cursor-pointer"
             >
               {cat}
             </button>
           ))}
         </div>
-        {/* Mobile Version Category Buttons */}
-        <div
-          className="
-            flex gap-4 mb-6 md:hidden
-            overflow-x-auto sm:overflow-visible
-            whitespace-nowrap sm:whitespace-normal
-            no-scrollbar
-
-          "
-        >
-          {[...categories].map((cat, index) => (
+        <div className="flex gap-4 mb-6 md:hidden overflow-x-auto whitespace-nowrap no-scrollbar">
+          {categories.map((cat, i) => (
             <button
-              key={index}
-              className="px-6 py-2 rounded-full bg-blue-900 text-white text-sm font-semibold hover:bg-blue-700 transition cursor-pointer flex-shrink-0"
+              key={i}
+              className="px-6 py-2 rounded-full bg-gray-100 text-black text-sm font-semibold hover:bg-gray-200 transition cursor-pointer flex-shrink-0"
             >
               {cat}
             </button>
@@ -95,25 +214,29 @@ const AllApps = () => {
         {rows.map((row, idx) => (
           <div
             key={idx}
-            className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 gap-6 mb-10 mt-10"
+            className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 gap-2 md:gap-2 mb-6 mt-6"
           >
             {row.map((app) => (
-              <div key={app.id} className="text-center">
+              <div
+                key={app.id}
+                className="text-center backdrop-blur-xl bg-white/30 p-1 md:p-2 rounded-lg shadow-md hover:shadow-md transition"
+              >
                 <Link to={`/app/${app.id}`} className="cursor-pointer">
-                  <img
-                    src={app.image}
-                    alt={app.name}
-                    className="w-20 h-20 sm:w-36 sm:h-36 mx-auto rounded-2xl shadow hover:scale-105 transition"
-                  />
+                  <div className="auto-shine shine-animate rounded-2xl">
+                    <img
+                      src={app.image}
+                      alt={app.name}
+                      className="w-24 h-22 md:w-36 md:h-36 mx-auto rounded-md md:rounded-2xl shadow hover:scale-105 transition"
+                    />
+                    <span className="shine-layer"></span>
+                  </div>
                 </Link>
-
                 <Link
                   to={`/app/${app.id}`}
                   className="block mt-2 text-sm font-semibold hover:text-blue-600 cursor-pointer"
                 >
                   {app.name}
                 </Link>
-
                 <p className="text-gray-500 text-sm">{app.rating} ★</p>
               </div>
             ))}

@@ -8,7 +8,7 @@ const Navbar = () => {
   return (
     <>
       {/* Top Helpline Bar */}
-      <div className="w-full bg-green-900 text-white text-sm">
+      <div className="hidden md:block w-full bg-green-900 text-white text-sm">
         <div className="max-w-7xl mx-auto px-4 py-2 text-lg">
           Helpline: inquary@oraclestore.org
         </div>

@@ -1,1 +1,78 @@
 @import "tailwindcss";
+@keyframes rgbSlide {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.rgb-badge {
+  background: linear-gradient(
+    270deg,
+    rgb(255, 0, 0),
+    rgb(255, 140, 0),
+    rgb(255, 255, 0),
+    rgb(0, 255, 128),
+    rgb(0, 128, 255),
+    rgb(128, 0, 255),
+    rgb(255, 0, 0)
+  );
+
+  background-size: 500% 500%;
+  animation: rgbSlide 10s linear infinite;
+
+  /* Soft glow shadow */
+  box-shadow:
+    0 0 6px rgba(255, 255, 255, 0.25),
+    0 0 12px rgba(0, 150, 255, 0.25),
+    0 0 20px rgba(128, 0, 255, 0.25);
+
+  transition: box-shadow 0.3s ease;
+}
+
+.auto-shine {
+  position: relative;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.shine-layer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    transparent 30%,
+    rgba(255,255,255,0.7) 50%,
+    transparent 70%
+  );
+  transform: translateX(-150%);
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.shine-animate .shine-layer {
+  animation: shineSwipe 1.4s ease-out forwards;
+}
+
+@keyframes shineSwipe {
+  0% {
+    transform: translateX(-150%) skewX(-15deg);
+  }
+  100% {
+    transform: translateX(150%) skewX(-15deg);
+  }
+}
+
+.gradient-animate {
+  background: linear-gradient(90deg, #170C8B, #2BA3E4);
+  background-size: 300% 300%;
+  animation: gradientMove 4s ease-in-out infinite;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
