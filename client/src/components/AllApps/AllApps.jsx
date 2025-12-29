@@ -4,24 +4,7 @@ import { IoIosApps } from "react-icons/io";
 import { FaGooglePlay } from "react-icons/fa";
 
 const AllApps = () => {
-  const categories = [
-    "Games",
-    "Tools",
-    "Video App",
-    "Betting App",
-    "Earning App",
-    "Call App",
-    "Social Media",
-    "Education",
-    "Photography",
-    "Travel",
-    "Health & Fitness",
-    "Music & Audio",
-    "Finance",
-    "Shopping",
-    "News & Magazines",
-  ];
-
+ 
   const apps = [
     {
       id: 1,
@@ -155,8 +138,8 @@ const AllApps = () => {
             src="https://i.ibb.co.com/5XmZSPWz/detailed-esports-gaming-logo-template-1029473-588861-ezgif-com-avif-to-jpg-converter.jpg"
             alt="Logo"
           />
-          <span className="bg-gradient-to-r from-cyan-400 to-pink-500 absolute top-2 right-0 px-3 py-1 text-white font-bold text-sm shadow-lg">
-            Boost
+         <span className="bg-white absolute top-0 right-0 px-1 py-[0.5] text-black text-sm">
+            Ads
           </span>
         </div>
       </div>
@@ -175,8 +158,8 @@ const AllApps = () => {
             src="https://i.ibb.co.com/5XmZSPWz/detailed-esports-gaming-logo-template-1029473-588861-ezgif-com-avif-to-jpg-converter.jpg"
             alt="Logo"
           />
-          <span className="bg-gradient-to-r from-cyan-400 to-pink-500 absolute top-1 right-0 px-3 py-1 text-white font-semibold rounded-l-sm text-lg">
-            Boost
+           <span className="bg-white absolute top-0 right-0 px-1 py-[0.5] text-black text-sm">
+            Ads
           </span>
         </div>
 
@@ -187,28 +170,8 @@ const AllApps = () => {
         </div>
       </div>
       
-      <div className=" rounded-b-md py-5">
-        {/* Categories */}
-        <div className=" hidden md:flex flex-wrap gap-4 justify-start mb-6">
-          {categories.map((cat, i) => (
-            <button
-              key={i}
-              className="px-6 py-2 rounded-full bg-gray-100 text-black text-sm font-semibold hover:bg-gray-200 transition cursor-pointer"
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-        <div className="flex gap-4 mb-6 md:hidden overflow-x-auto whitespace-nowrap no-scrollbar">
-          {categories.map((cat, i) => (
-            <button
-              key={i}
-              className="px-6 py-2 rounded-full bg-gray-100 text-black text-sm font-semibold hover:bg-gray-200 transition cursor-pointer flex-shrink-0"
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
+      <div className="rounded-b-md py-5">
+        
 
         {/* Apps */}
         {rows.map((row, idx) => (

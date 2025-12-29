@@ -2,8 +2,73 @@ import React from "react";
 import { Link } from "react-router";
 import { IoIosApps } from "react-icons/io";
 import { FaGooglePlay } from "react-icons/fa";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
 
 const TopApps = () => {
+  const categories = [
+    {
+      name: "All",
+      image:
+        "https://i.ibb.co.com/5XmZSPWz/detailed-esports-gaming-logo-template-1029473-588861-ezgif-com-avif-to-jpg-converter.jpg",
+      id: 1,
+    },
+    {
+      name: "Games",
+      image:
+        "https://i.ibb.co.com/QQ3FdLyN2/logo-design-technology-company-vector-illustration-1253202-6803-ezgif-com-avif-to-jpg-converter.jpg",
+      id: 2,
+    },
+    {
+      name: "Tools",
+      image:
+        "https://i.ibb.co.com/DDn0L7tp/logo-design-technology-company-vector-illustration-1253202-4950-ezgif-com-avif-to-jpg-converter.jpg",
+      id: 3,
+    },
+    {
+      name: "Social Media",
+      image:
+        "https://i.ibb.co.com/5XmZSPWz/detailed-esports-gaming-logo-template-1029473-588861-ezgif-com-avif-to-jpg-converter.jpg",
+      id: 4,
+    },
+    {
+      name: "Productivity",
+      image:
+        "https://i.ibb.co.com/G4yyryTZ/cyberpunk-assassins-neon-visage-862264-8569-ezgif-com-avif-to-jpg-converter.jpg",
+      id: 5,
+    },
+    {
+      name: "Entertainment",
+      image:
+        "https://i.ibb.co.com/5XmZSPWz/detailed-esports-gaming-logo-template-1029473-588861-ezgif-com-avif-to-jpg-converter.jpg",
+      id: 6,
+    },
+    {
+      name: "Education",
+      image:
+        "https://i.ibb.co.com/DDn0L7tp/logo-design-technology-company-vector-illustration-1253202-4950-ezgif-com-avif-to-jpg-converter.jpg",
+      id: 7,
+    },
+    {
+      name: "Health & Fitness",
+      image:
+        "https://i.ibb.co.com/5XmZSPWz/detailed-esports-gaming-logo-template-1029473-588861-ezgif-com-avif-to-jpg-converter.jpg",
+      id: 8,
+    },
+    {
+      name: "Photography",
+      image:
+        "https://i.ibb.co.com/G4yyryTZ/cyberpunk-assassins-neon-visage-862264-8569-ezgif-com-avif-to-jpg-converter.jpg",
+      id: 9,
+    },
+    {
+      name: "Music",
+      image:
+        "https://i.ibb.co.com/DDn0L7tp/logo-design-technology-company-vector-illustration-1253202-4950-ezgif-com-avif-to-jpg-converter.jpg",
+      id: 10,
+    }
+  ];
+
   const appData = [
     {
       id: 1,
@@ -147,6 +212,48 @@ const TopApps = () => {
         }
       `}</style>
 
+    {/* Desktop Categories (Image + Name) */}
+<div className="hidden md:flex flex-wrap gap-4 justify-start mb-6">
+  {categories.map((cat) => (
+    <button
+      key={cat.id}
+      className="flex items-center gap-3 bg-gray-100 hover:bg-gray-200 transition px-4 py-2 rounded-full shadow-sm cursor-pointer"
+    >
+      <img
+        src={cat.image}
+        alt={cat.name}
+        className="w-8 h-8 rounded-full object-cover"
+      />
+      <span className="font-semibold text-sm">{cat.name}</span>
+    </button>
+  ))}
+</div>
+
+{/* Mobile Swiper Categories (Image + Name) */}
+<div className="md:hidden mb-6">
+  <Swiper
+    spaceBetween={15}
+    slidesPerView={3.4}
+    grabCursor
+  >
+    {categories.map((cat) => (
+      <SwiperSlide key={cat.id}>
+        <div className="flex flex-col items-center">
+          <img
+            src={cat.image}
+            alt={cat.name}
+            className="w-16 h-16 rounded-full object-cover shadow-md"
+          />
+          <span className="text-xs font-semibold mt-1 text-center">
+            {cat.name}
+          </span>
+        </div>
+      </SwiperSlide>
+    ))}
+  </Swiper>
+</div>
+
+
       {/* mobile Header */}
       <div className="flex flex-col gap-2 md:hidden md:flex-row md:items-stretch md:gap-3">
         <div className="flex gap-2 md:flex-[2]">
@@ -169,8 +276,8 @@ const TopApps = () => {
             src="https://i.ibb.co.com/5XmZSPWz/detailed-esports-gaming-logo-template-1029473-588861-ezgif-com-avif-to-jpg-converter.jpg"
             alt="Logo"
           />
-          <span className="bg-gradient-to-r from-cyan-400 to-pink-500 absolute top-2 right-0 px-3 py-1 text-white font-bold text-sm shadow-lg">
-            Boost
+          <span className="bg-white absolute top-0 right-0 px-1 py-[0.5] text-black text-sm">
+            Ads
           </span>
         </div>
       </div>
@@ -189,8 +296,8 @@ const TopApps = () => {
             src="https://i.ibb.co.com/5XmZSPWz/detailed-esports-gaming-logo-template-1029473-588861-ezgif-com-avif-to-jpg-converter.jpg"
             alt="Logo"
           />
-          <span className="bg-gradient-to-r from-cyan-400 to-pink-500 absolute top-1 right-0 px-3 py-1 text-white font-semibold rounded-l-sm text-lg">
-            Boost
+          <span className="bg-white absolute top-0 right-0 px-1 py-[0.5] text-black text-sm">
+            Ads
           </span>
         </div>
 

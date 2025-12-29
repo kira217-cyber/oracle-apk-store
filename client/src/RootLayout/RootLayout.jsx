@@ -12,7 +12,6 @@ const RootLayout = () => {
       <div className="pb-4">
         <Outlet />
       </div>
-
       <BottomNavbar />
       <Footer />
     </div>

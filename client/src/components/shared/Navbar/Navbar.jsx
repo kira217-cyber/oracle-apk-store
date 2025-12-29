@@ -59,7 +59,7 @@ const Navbar = () => {
               </NavLink>
 
               <NavLink
-                to="/iso"
+                to="/app-details"
                 className={({ isActive }) =>
                   `cursor-pointer ${
                     isActive
@@ -72,7 +72,7 @@ const Navbar = () => {
               </NavLink>
 
               <NavLink
-                to="/windows"
+                to="/my-apps"
                 className={({ isActive }) =>
                   `cursor-pointer ${
                     isActive
@@ -81,7 +81,7 @@ const Navbar = () => {
                   }`
                 }
               >
-                WINDOWS SOFT
+                My APPS
               </NavLink>
             </ul>
 
@@ -118,96 +118,10 @@ const Navbar = () => {
                 Publish APK
               </Link>
             </div>
-
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setOpen(!open)}
-              className="md:hidden cursor-pointer"
-            >
-              {open ? <X size={30} /> : <Menu size={30} />}
-            </button>
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        {open && (
-          <div className="md:hidden bg-green-900 text-white px-4 py-4 space-y-4">
-            {/* Search Mobile */}
-            <div className="flex items-center bg-white rounded-full px-4 py-2">
-              <Mic size={18} className="text-gray-600 mr-2" />
-              <input
-                type="text"
-                placeholder="Search..."
-                className="flex-1 outline-none text-black"
-              />
-              <Search size={20} className="text-gray-700" />
-            </div>
-
-            {/* Links */}
-            <ul className="space-y-2 font-semibold">
-              <NavLink
-                to="/"
-                className={({ isActive }) =>
-                  `block cursor-pointer ${
-                    isActive ? "text-green-300 font-bold" : ""
-                  }`
-                }
-              >
-                HOME
-              </NavLink>
-
-              <NavLink
-                to="/android"
-                className={({ isActive }) =>
-                  `block cursor-pointer ${
-                    isActive ? "text-green-300 font-bold" : ""
-                  }`
-                }
-              >
-                ANDROID APP
-              </NavLink>
-
-              <NavLink
-                to="/iso"
-                className={({ isActive }) =>
-                  `block cursor-pointer ${
-                    isActive ? "text-green-300 font-bold" : ""
-                  }`
-                }
-              >
-                ISO APP
-              </NavLink>
-
-              <NavLink
-                to="/windows"
-                className={({ isActive }) =>
-                  `block cursor-pointer ${
-                    isActive ? "text-green-300 font-bold" : ""
-                  }`
-                }
-              >
-                WINDOWS SOFT
-              </NavLink>
-            </ul>
-
-            {/* Buttons */}
-            <div className="flex justify-start gap-4 items-center gap-3">
-              <Link
-                to={"/login"}
-                className="px-4 py-2 rounded-full bg-white text-green-800 font-semibold cursor-pointer"
-              >
-                Login
-              </Link>
-
-              <Link
-                to={"/register"}
-                className="px-4 py-2 rounded-full bg-blue-500 text-white font-semibold cursor-pointer"
-              >
-                Publish APK
-              </Link>
-            </div>
-          </div>
-        )}
+      
       </nav>
     </>
   );

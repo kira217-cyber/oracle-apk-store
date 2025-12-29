@@ -62,9 +62,10 @@ const PromoBanner = () => {
               />
 
               {/* Badge */}
-              <span className="absolute top-3 left-3 bg-gradient-to-l from-cyan-400 to-red-500 text-white px-6 py-2 rounded-sm text-lg font-semibold">
-                {banner.badge}
-              </span>
+                <span className="bg-white absolute top-0 right-0 px-1 py-[0.5] text-black text-sm">
+                  Ads
+                </span>
+             
 
               {/* Title */}
               <div className="absolute bottom-4 left-4 text-white md:text-lg font-bold shadow-lg">

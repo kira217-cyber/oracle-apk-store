@@ -6,10 +6,12 @@ import Register from "../pages/Register/Register";
 import AndroidApp from "../pages/AndroidApp/AndroidApp";
 import IsoApp from "../pages/IsoApp/IsoApp";
 import WindowsSoft from "../pages/WindowsSoft/WindowsSoft";
-import NotFoundPage from "../pages/NotFoundPage/NotFoundPage";;
+import NotFoundPage from "../pages/NotFoundPage/NotFoundPage";
 import Profile from "../pages/Profile/Profile";
 import Search from "../pages/Search/Search";
 import Download from "../pages/Download/Download";
+import MyApps from "../pages/MyApps/MyApps";
+import AppDetails from "../pages/AppDetails/AppDetails";
 
 export const routes = createBrowserRouter([
   {
@@ -26,6 +28,8 @@ export const routes = createBrowserRouter([
       { path: "search", element: <Search /> },
       { path: "download", element: <Download /> },
       { path: "profile", element: <Profile /> },
+      { path: "my-apps", element: <MyApps /> },
+      { path: "app-details", element: <AppDetails /> },
     ],
   },
 ]);
