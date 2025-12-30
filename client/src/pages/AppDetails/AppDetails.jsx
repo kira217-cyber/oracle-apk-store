@@ -401,6 +401,14 @@ const AppDetails = () => {
                 replyDate="December 2, 2025"
               />
             </div>
+            <div className="hidden md:block mt-8 mb-4">
+              <h1 className="text-2xl font-bold text-gray-800">What’s new</h1>
+              <p className="text-gray-500 text-sm mt-4">
+                Bug fixes and performance improvements. <br />
+                Our continuous efforts are to improve and the app more
+                rewarding.
+              </p>
+            </div>
           </div>
 
           {/* Right Section - App Icon */}
@@ -563,11 +571,13 @@ const AppDetails = () => {
         <div className="max-w-6xl mx-auto px-4 py-8 grid md:grid-cols-2 gap-8 items-center">
           {/* -------- MOBILE TOP SECTION -------- */}
           <div className="md:hidden flex items-center gap-4 ">
-            <div className="shadow-xl h-22 w-32 p-2 rounded-xl">
-              <img
-              src="https://i.ibb.co.com/WvRGSWZj/unnamed-9.webp"
-              className=" object-cover"
-            />
+            <div className="shadow-xl p-1 rounded-xl">
+              <div className="h-22 w-22">
+                <img
+                  src="https://i.ibb.co.com/WvRGSWZj/unnamed-9.webp"
+                  className=" object-cover"
+                />
+              </div>
             </div>
 
             <div>
@@ -649,7 +659,7 @@ const AppDetails = () => {
                 <SwiperSlide key={index}>
                   <img
                     src={img}
-                    className="w-full  h-40 md:h-60 object-cover rounded-xl"
+                    className="w-full  h-50 md:h-60 object-cover rounded-lg"
                     alt=""
                   />
                 </SwiperSlide>
@@ -920,6 +930,13 @@ const AppDetails = () => {
             </div>
           </div>
         </div>
+      </div>
+      <div className="md:hidden mt-8 px-4 mb-4">
+        <h1 className="text-2xl font-bold">What’s new</h1>
+        <p className="text-gray-500 text-sm mt-4">
+          Bug fixes and performance improvements. <br />
+          Our continuous efforts are to improve and the app more rewarding.
+        </p>
       </div>
     </>
   );
