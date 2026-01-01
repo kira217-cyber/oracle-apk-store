@@ -1,6 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router";
 import { FaStar } from "react-icons/fa";
+import { FiCamera } from "react-icons/fi";
+import { MdDashboard } from "react-icons/md";
 
 // Swiper Imports
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -110,14 +112,59 @@ const appData = [
 
 const MyApps = () => {
   const navigate = useNavigate();
+  const cover =
+    "https://i.ibb.co.com/vxxkVD2J/bird-8788491-1280.jpg";
+  const profile =
+    "https://i.ibb.co.com/RGxDVfPv/eagle-logo-design-template-incorporates-strong-stylized-depiction-eagle-s-head-vector-illustration-e.webp";
 
   return (
     <div className="max-w-7xl mx-auto px-2 md:px-0">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4 mt-4">
-        <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-          Company Name
-        </h2>
+      <div className="w-full bg-white shadow mb-8 mt-8 rounded-2xl">
+        {/* Cover Photo */}
+        <div className="relative w-full h-[220px] md:h-[350px] overflow-hidden">
+          <img src={cover} alt="cover" className="w-full h-full object-cover rounded-2xl" />
+
+          {/* Edit Cover Button */}
+          <button className="absolute bottom-4 right-4 bg-white text-black text-sm font-medium px-3 py-2 rounded-lg shadow cursor-pointer flex items-center gap-2 hover:bg-gray-100">
+            <FiCamera /> Edit cover photo
+          </button>
+        </div>
+
+        {/* Profile + Info Section */}
+        <div className="max-w-6xl mx-auto px-4 pb-5">
+          <div className="flex flex-col md:flex-row md:items-end gap-4 relative">
+            {/* Profile Image */}
+            <div className="relative">
+              <img
+                src={profile}
+                alt="profile"
+                className="w-32 h-32 md:w-44 md:h-44 rounded-full border-8 border-white object-cover -mt-12 md:-mt-20"
+              />
+
+              {/* Profile Edit Icon */}
+              <div className="absolute bottom-4 right-48 md:bottom-4 md:right-2 bg-white p-2 rounded-full shadow cursor-pointer">
+                <FiCamera />
+              </div>
+            </div>
+
+            {/* User Info */}
+            <div className="flex flex-col mt-2">
+              <h1 className="text-2xl md:text-3xl font-bold">Comapany Name</h1>
+              <p className="text-gray-600 text-sm md:text-base">
+                Email: example@12gmail.com
+              </p>
+            </div>
+
+            {/* Right Section Buttons */}
+            <div className="md:ml-auto flex gap-3">
+              <button className="bg-blue-600 cursor-pointer hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+                <MdDashboard className="text-lg" />
+                Dashboard
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="flex justify-center items-center ">

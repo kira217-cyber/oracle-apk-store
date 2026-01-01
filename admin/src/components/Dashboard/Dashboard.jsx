@@ -94,7 +94,7 @@ const Dashboard = () => {
               <span
                 key={i}
                 className={`p-2 rounded ${
-                  i === 24 ? "bg-indigo-600 text-white" : "bg-gray-100"
+                  i === 0 ? "bg-indigo-600 text-white" : "bg-gray-100"
                 }`}
               >
                 {i + 1}
