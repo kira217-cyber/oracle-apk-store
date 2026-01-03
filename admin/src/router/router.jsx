@@ -7,11 +7,13 @@ import Profile from "../pages/Profile/Profile";
 import TopUp from "../pages/TopUp/TopUp";
 import BoostApp from "../pages/BoostApp/BoostApp";
 import ReferLink from "../pages/ReferLink/ReferLink";
+import NotFoundPage from "../pages/NotFoundPage/NotFoundPage";
 
 export const routes = createBrowserRouter([
   {
     path: "/",
     element: <RootLayout></RootLayout>,
+    errorElement: <NotFoundPage />,
     children: [
       {
         index: true,
