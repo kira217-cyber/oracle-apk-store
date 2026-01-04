@@ -120,10 +120,10 @@ const MyApps = () => {
   return (
     <div className="max-w-7xl mx-auto px-2 md:px-0">
       {/* Header */}
-      <div className="w-full bg-white shadow mb-8 mt-8 rounded-2xl">
+      <div className="w-full bg-white shadow mb-8 mt-8 ">
         {/* Cover Photo */}
         <div className="relative w-full h-[220px] md:h-[350px] overflow-hidden">
-          <img src={cover} alt="cover" className="w-full h-full object-cover rounded-2xl" />
+          <img src={cover} alt="cover" className="w-full h-full object-cover" />
 
           {/* Edit Cover Button */}
           <button className="absolute bottom-4 right-4 bg-white text-black text-sm font-medium px-3 py-2 rounded-lg shadow cursor-pointer flex items-center gap-2 hover:bg-gray-100">

@@ -12,6 +12,7 @@ import Search from "../pages/Search/Search";
 import Download from "../pages/Download/Download";
 import MyApps from "../pages/MyApps/MyApps";
 import AppDetails from "../pages/AppDetails/AppDetails";
+import PrivateRoute from "../PrivetRoute/PrivetRoute";
 
 export const routes = createBrowserRouter([
   {
@@ -23,13 +24,29 @@ export const routes = createBrowserRouter([
       { path: "login", element: <Login /> },
       { path: "register", element: <Register /> },
       { path: "android", element: <AndroidApp /> },
-      { path: "iso", element: <IsoApp /> },
+      {
+        path: "iso",
+        element: (
+          <PrivateRoute>
+            {" "}
+            <IsoApp />
+          </PrivateRoute>
+        ),
+      },
       { path: "windows", element: <WindowsSoft /> },
       { path: "search", element: <Search /> },
       { path: "download", element: <Download /> },
       { path: "profile", element: <Profile /> },
       { path: "my-apps", element: <MyApps /> },
-      { path: "app-details", element: <AppDetails /> },
+      {
+        path: "app-details",
+        element: (
+          <PrivateRoute>
+            {" "}
+            <AppDetails />{" "}
+          </PrivateRoute>
+        ),
+      },
     ],
   },
 ]);

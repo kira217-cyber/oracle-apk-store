@@ -1,3 +1,5 @@
+// src/pages/Dashboard/Dashboard.jsx
+
 import { motion } from "framer-motion";
 import {
   FaDownload,
@@ -6,129 +8,249 @@ import {
   FaBullhorn,
   FaPlay,
   FaCalendarAlt,
+  FaChartLine,
+  FaUsers,
+  FaTrophy,
 } from "react-icons/fa";
 
 const stats = [
-  { title: "Total Earning", value: "$126.45", icon: <FaMoneyBillWave /> },
-  { title: "Total Free Publish App", value: "3599", icon: <FaMobileAlt /> },
-  { title: "Total Download", value: "5,152", icon: <FaDownload /> },
-  { title: "Total Withdraw", value: "$126.45", icon: <FaMoneyBillWave /> },
-  { title: "Total Paid App", value: "3,256.67", icon: <FaMobileAlt /> },
-  { title: "Total Promotion", value: "5,152", icon: <FaBullhorn /> },
+  {
+    title: "Total Earnings",
+    value: "$12,645.00",
+    icon: <FaMoneyBillWave />,
+    color: "from-emerald-500 to-teal-600",
+  },
+  {
+    title: "Free Apps Published",
+    value: "3,599",
+    icon: <FaMobileAlt />,
+    color: "from-blue-500 to-cyan-600",
+  },
+  {
+    title: "Total Downloads",
+    value: "51,520",
+    icon: <FaDownload />,
+    color: "from-purple-500 to-pink-600",
+  },
+  {
+    title: "Total Withdrawals",
+    value: "$8,920.50",
+    icon: <FaMoneyBillWave />,
+    color: "from-amber-500 to-orange-600",
+  },
+  {
+    title: "Paid Apps",
+    value: "$32,566.67",
+    icon: <FaTrophy />,
+    color: "from-indigo-500 to-purple-600",
+  },
+  {
+    title: "Active Promotions",
+    value: "42",
+    icon: <FaBullhorn />,
+    color: "from-rose-500 to-pink-600",
+  },
 ];
 
 const cardAnim = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0 },
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
 };
 
 const Dashboard = () => {
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-6">
-      {/* STATS GRID */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="min-h-screen  lg:p-8">
+      {/* STATS GRID - Premium Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         {stats.map((item, i) => (
           <motion.div
             key={i}
             variants={cardAnim}
             initial="hidden"
-            animate="visible"
+            whileInView="visible"
+            viewport={{ once: true }}
             transition={{ delay: i * 0.1 }}
-            className="bg-white rounded-xl shadow-md p-5 flex items-center justify-between"
+            className="group relative overflow-hidden bg-white/80 backdrop-blur-md rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 border border-white/50"
+            whileHover={{ y: -8 }}
           >
-            <div>
-              <p className="text-sm text-gray-500">{item.title}</p>
-              <h2 className="text-2xl font-bold text-indigo-600">
-                {item.value}
-              </h2>
+            <div
+              className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-90`}
+            />
+            <div className="relative z-10 p-6 flex items-center justify-between">
+              <div>
+                <p className="text-white/90 text-sm font-medium">
+                  {item.title}
+                </p>
+                <h2 className="text-3xl font-extrabold text-white mt-2">
+                  {item.value}
+                </h2>
+              </div>
+              <div className="text-5xl text-white/80 group-hover:scale-110 transition-transform duration-300">
+                {item.icon}
+              </div>
             </div>
-            <div className="text-3xl text-indigo-500">{item.icon}</div>
+            <div className="absolute bottom-0 left-0 w-full h-1 bg-white/30" />
           </motion.div>
         ))}
       </div>
 
-      {/* MIDDLE SECTION */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-6">
-        {/* SLIDERS / INFO */}
+      {/* MIDDLE SECTION - Enhanced Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        {/* Progress Analytics */}
         <motion.div
-          className="bg-white rounded-xl shadow-md p-5"
-          whileHover={{ scale: 1.02 }}
+          initial={{ opacity: 0, x: -40 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-6 border border-white/30"
         >
-          <p className="font-semibold mb-3">Progress</p>
-          {[60, 40, 80].map((v, i) => (
-            <div key={i} className="mb-3">
-              <div className="h-2 bg-gray-200 rounded">
-                <div
-                  className="h-2 bg-indigo-600 rounded"
-                  style={{ width: `${v}%` }}
-                />
+          <h3 className="text-xl font-bold text-gray-800 mb-5 flex items-center gap-3">
+            <FaChartLine className="text-indigo-600" />
+            Performance Overview
+          </h3>
+          <div className="space-y-5">
+            {[
+              {
+                label: "Download Growth",
+                value: 78,
+                color: "bg-gradient-to-r from-indigo-500 to-purple-600",
+              },
+              {
+                label: "Revenue Increase",
+                value: 65,
+                color: "bg-gradient-to-r from-emerald-500 to-teal-600",
+              },
+              {
+                label: "User Engagement",
+                value: 92,
+                color: "bg-gradient-to-r from-pink-500 to-rose-600",
+              },
+            ].map((bar, i) => (
+              <div key={i}>
+                <div className="flex justify-between text-sm text-gray-600 mb-2">
+                  <span>{bar.label}</span>
+                  <span className="font-semibold">{bar.value}%</span>
+                </div>
+                <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    whileInView={{ width: `${bar.value}%` }}
+                    transition={{ duration: 1.2, delay: i * 0.2 }}
+                    className={`h-full ${bar.color} rounded-full shadow-md`}
+                  />
+                </div>
               </div>
-            </div>
-          ))}
-          <p className="text-xs text-gray-400">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          </p>
-        </motion.div>
-
-        {/* CHART PLACEHOLDER */}
-        <motion.div
-          className="bg-white rounded-xl shadow-md p-5 col-span-1 lg:col-span-1"
-          whileHover={{ scale: 1.02 }}
-        >
-          <p className="font-semibold mb-3">Engagement</p>
-          <div className="h-40 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center text-white font-bold">
-            Chart Area
-          </div>
-        </motion.div>
-
-        {/* CALENDAR */}
-        <motion.div
-          className="bg-white rounded-xl shadow-md p-5"
-          whileHover={{ scale: 1.02 }}
-        >
-          <p className="font-semibold mb-3 flex items-center gap-2">
-            <FaCalendarAlt /> Calendar
-          </p>
-          <div className="grid grid-cols-7 gap-2 text-center text-sm">
-            {Array.from({ length: 30 }).map((_, i) => (
-              <span
-                key={i}
-                className={`p-2 rounded ${
-                  i === 0 ? "bg-indigo-600 text-white" : "bg-gray-100"
-                }`}
-              >
-                {i + 1}
-              </span>
             ))}
           </div>
         </motion.div>
+
+        {/* Engagement Chart Placeholder */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-2xl shadow-2xl p-6 text-white"
+        >
+          <h3 className="text-xl font-bold mb-4 flex items-center gap-3">
+            <FaUsers /> User Engagement
+          </h3>
+          <div className="h-64 bg-white/10 backdrop-blur rounded-xl flex items-center justify-center">
+            <p className="text-2xl font-semibold opacity-80">Analytics Chart</p>
+          </div>
+          <p className="text-sm mt-4 opacity-90">
+            Real-time data visualization coming soon!
+          </p>
+        </motion.div>
+
+        {/* Calendar */}
+        <motion.div
+          initial={{ opacity: 0, x: 40 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-6 border border-white/30"
+        >
+          <h3 className="text-xl font-bold text-gray-800 mb-5 flex items-center gap-3">
+            <FaCalendarAlt className="text-purple-600" />
+            Upcoming Events
+          </h3>
+          <div className="grid grid-cols-7 gap-2 text-center text-sm font-medium text-gray-600 mb-3">
+            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+              <div key={day}>{day}</div>
+            ))}
+          </div>
+          <div className="grid grid-cols-7 gap-2 text-center">
+            {Array.from({ length: 35 }, (_, i) => {
+              const day = i + 1;
+              const isToday = day === 5; // Simulate today as 5th
+              return (
+                <motion.span
+                  key={i}
+                  whileHover={{ scale: 1.1 }}
+                  className={`p-3 rounded-xl transition-all ${
+                    isToday
+                      ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold shadow-lg"
+                      : day > 30
+                      ? "text-gray-300"
+                      : "bg-gray-100 hover:bg-indigo-100 text-gray-700"
+                  }`}
+                >
+                  {day <= 31 ? day : ""}
+                </motion.span>
+              );
+            })}
+          </div>
+        </motion.div>
       </div>
 
-      {/* VIDEO SECTION */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-        {[1, 2, 3].map((_, i) => (
-          <motion.div
-            key={i}
-            className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl h-36 flex items-center justify-center shadow-md"
-            whileHover={{ scale: 1.05 }}
-          >
-            <FaPlay className="text-white text-4xl" />
-          </motion.div>
-        ))}
+      {/* VIDEO / PROMO SECTION */}
+      <div className="mb-8">
+        <h3 className="text-2xl font-bold text-white mb-5">
+          Featured Tutorials
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[
+            { title: "How to Boost Your App", views: "12.5K views" },
+            { title: "Monetization Strategies", views: "8.2K views" },
+            { title: "APK Optimization Tips", views: "15.8K views" },
+          ].map((video, i) => (
+            <motion.div
+              key={i}
+              whileHover={{ scale: 1.05 }}
+              className="relative overflow-hidden rounded-2xl shadow-xl cursor-pointer group"
+            >
+              <div className="bg-gradient-to-br from-indigo-600 to-purple-700 h-48 flex items-center justify-center">
+                <FaPlay className="text-white text-5xl group-hover:scale-110 transition-transform" />
+              </div>
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-5">
+                <div className="text-white">
+                  <h4 className="font-bold text-lg">{video.title}</h4>
+                  <p className="text-sm opacity-90">{video.views}</p>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
       </div>
 
       {/* FOOTER NOTICE */}
       <motion.div
-        className="bg-white rounded-xl shadow-md mt-6 p-4 flex flex-col md:flex-row justify-between items-center"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-2xl shadow-2xl p-6 text-white flex flex-col md:flex-row justify-between items-center"
       >
-        <p>
-          <span className="font-semibold text-indigo-600">Notice:</span> Oracle
-          Apk Store.....
-        </p>
-        <p className="text-sm text-gray-500 mt-2 md:mt-0">
-          Date: <span className="font-semibold">12/12/2025</span>
+        <div>
+          <p className="text-lg font-semibold">
+            <span className="underline decoration-white/50">
+              Important Notice:
+            </span>
+          </p>
+          <p className="mt-2 opacity-90">
+            Oracle APK Store will be undergoing scheduled maintenance on January
+            10, 2026. Uploads may be temporarily unavailable.
+          </p>
+        </div>
+        <p className="text-sm mt-4 md:mt-0 opacity-80">
+          Date: <span className="font-bold">January 05, 2026</span>
         </p>
       </motion.div>
     </div>

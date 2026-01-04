@@ -8,6 +8,9 @@ import TopUp from "../pages/TopUp/TopUp";
 import BoostApp from "../pages/BoostApp/BoostApp";
 import ReferLink from "../pages/ReferLink/ReferLink";
 import NotFoundPage from "../pages/NotFoundPage/NotFoundPage";
+import Register from "../pages/Register/Register";
+import Login from "../pages/Login/Login";
+import PrivateRoute from "../PrivateRoute/PrivateRoute";
 
 export const routes = createBrowserRouter([
   {
@@ -17,33 +20,74 @@ export const routes = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Home></Home>,
+        element: (
+          <PrivateRoute>
+            {" "}
+            <Home></Home>{" "}
+          </PrivateRoute>
+        ),
       },
       {
         path: "all-apk",
-        element: <AllApk></AllApk>,
+        element: (
+          <PrivateRoute>
+            <AllApk></AllApk>{" "}
+          </PrivateRoute>
+        ),
       },
       {
         path: "withdraw",
-        element: <Withdraw></Withdraw>,
+        element: (
+          <PrivateRoute>
+            {" "}
+            <Withdraw></Withdraw>{" "}
+          </PrivateRoute>
+        ),
       },
       {
         path: "top-up",
-        element: <TopUp></TopUp>,
+        element: (
+          <PrivateRoute>
+            {" "}
+            <TopUp></TopUp>{" "}
+          </PrivateRoute>
+        ),
       },
 
       {
         path: "profile",
-        element: <Profile></Profile>,
+        element: (
+          <PrivateRoute>
+            {" "}
+            <Profile></Profile>{" "}
+          </PrivateRoute>
+        ),
       },
       {
         path: "refer-link",
-        element: <ReferLink></ReferLink>,
+        element: (
+          <PrivateRoute>
+            <ReferLink></ReferLink>{" "}
+          </PrivateRoute>
+        ),
       },
       {
         path: "boost-app",
-        element: <BoostApp></BoostApp>,
+        element: (
+          <PrivateRoute>
+            {" "}
+            <BoostApp></BoostApp>{" "}
+          </PrivateRoute>
+        ),
       },
     ],
+  },
+  {
+    path: "register",
+    element: <Register></Register>,
+  },
+  {
+    path: "login",
+    element: <Login></Login>,
   },
 ]);
