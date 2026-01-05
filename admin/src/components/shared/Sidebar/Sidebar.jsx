@@ -1,6 +1,4 @@
-// src/layouts/Sidebar.jsx
-
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router";
 import {
   FaHome,
@@ -18,21 +16,26 @@ import {
   FaTimes,
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import { toast } from "react-toastify"; // Make sure you have react-toastify installed
+import { toast } from "react-toastify";
 import { useAuth } from "../../../hooks/useAuth";
 import { IoIosApps } from "react-icons/io";
-
+import axios from "axios";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { logout } = useAuth(); // Get setUser from context
+  const { logout, user } = useAuth();
+  const [developer, setDeveloper] = useState(null);
   const navigate = useNavigate();
+  const userId = user?.id;
 
   const handleLogout = () => {
-    // Clear user from context and localStorage
     logout();
-    toast.success("👋 Logged out successfully!");
+    toast.success("Logged out successfully!");
     navigate("/login");
+  };
+
+  const handleClick = () => {
+    navigate("/upload-apk");
   };
 
   const menuItems = [
@@ -44,6 +47,44 @@ const Sidebar = () => {
     { to: "/withdraw", icon: <FaWallet />, text: "Withdraw" },
     { to: "/boost-app", icon: <FaRocket />, text: "Boost App" },
   ];
+
+  // Fetch developer data
+  useEffect(() => {
+    const fetchDeveloper = async () => {
+      if (!userId) return;
+
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/developer/${userId}`
+        );
+
+        if (response.data.success) {
+          setDeveloper(response.data.developer);
+        } else {
+          toast.error(response.data.message || "Failed to load profile");
+        }
+      } catch (err) {
+        console.error("Error fetching developer:", err);
+        toast.error("Failed to load profile data");
+      }
+    };
+
+    fetchDeveloper();
+  }, [userId]);
+
+  // Determine display name
+  const displayName = developer
+    ? developer.companyName?.trim() || developer.fullName?.trim() || "Developer"
+    : "Loading...";
+
+  const displayEmail = developer?.email || "N/A";
+
+  const joinedDate = developer?.createdAt
+    ? new Date(developer.createdAt).toLocaleDateString("en-US", {
+        month: "short",
+        year: "numeric",
+      })
+    : "N/A";
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
@@ -85,12 +126,16 @@ const Sidebar = () => {
               animate={{ x: 0 }}
               exit={{ x: -320 }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="fixed left-0 top-0 h-full cursor-pointer w-80 bg-gradient-to-b from-purple-950 via-indigo-950 to-black z-50 shadow-2xl"
+              className="fixed left-0 top-0 h-full w-80 bg-gradient-to-b from-purple-950 via-indigo-950 to-black z-50 shadow-2xl"
             >
               <SidebarContent
                 menuItems={menuItems}
                 onClose={() => setIsOpen(false)}
                 onLogout={handleLogout}
+                developer={developer}
+                displayName={displayName}
+                displayEmail={displayEmail}
+                joinedDate={joinedDate}
               />
             </motion.div>
           </>
@@ -99,11 +144,18 @@ const Sidebar = () => {
 
       {/* ================= DESKTOP SIDEBAR ================= */}
       <div className="hidden md:block fixed left-0 top-0 h-full w-72 bg-black/40 backdrop-blur-2xl border-r border-white/10 z-40">
-        <SidebarContent menuItems={menuItems} onLogout={handleLogout} />
+        <SidebarContent
+          menuItems={menuItems}
+          onLogout={handleLogout}
+          developer={developer}
+          displayName={displayName}
+          displayEmail={displayEmail}
+          joinedDate={joinedDate}
+        />
       </div>
 
       {/* ================= MAIN CONTENT AREA ================= */}
-      <div className="md:ml-72 pt-16 md:pt-8 px-4 md:px-10 pb-10">
+      <div className="md:ml-80 pt-16 md:pt-8 px-4 md:px-10 pb-10">
         {/* Desktop Top Bar */}
         <motion.div
           initial={{ y: -30, opacity: 0 }}
@@ -131,7 +183,8 @@ const Sidebar = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="flex items-center gap-3 cursor-pointer bg-gradient-to-r from-purple-600 to-pink-600 px-7 py-4 rounded-2xl font-bold shadow-xl hover:shadow-purple-600/40 transition"
+              onClick={handleClick} // ← This is the fix!
+              className="flex items-center cursor-pointer gap-3 bg-gradient-to-r from-purple-600 to-pink-600 px-7 py-4 rounded-2xl font-bold shadow-xl hover:shadow-purple-600/40 transition"
             >
               <FaUpload className="text-lg" />
               Upload APK
@@ -140,7 +193,7 @@ const Sidebar = () => {
         </motion.div>
 
         {/* Page Content Outlet */}
-        <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-2 mt-10 md:mt-0 md:p-10 shadow-2xl border border-white/10">
+        <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-6 md:p-10 shadow-2xl border border-white/10 min-h-[80vh]">
           <Outlet />
         </div>
       </div>
@@ -149,18 +202,24 @@ const Sidebar = () => {
 };
 
 // Reusable Sidebar Content Component
-const SidebarContent = ({ menuItems, onClose, onLogout }) => {
+const SidebarContent = ({
+  menuItems,
+  onClose,
+  onLogout,
+  displayName,
+  displayEmail,
+  joinedDate,
+}) => {
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="p-6 border-b border-white/10">
+      <div className="md:hidden p-6 border-b border-white/10">
         <div className="flex items-center justify-between">
-          {/* Logo + Title - Centered */}
-          <div className="flex md:hidden items-center justify-center gap-4">
+          <div className="flex items-center gap-4">
             <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center text-3xl font-bold shadow-lg">
               A
             </div>
-            <div className="text-center">
+            <div>
               <h1 className="text-2xl font-extrabold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                 APK Store
               </h1>
@@ -168,11 +227,10 @@ const SidebarContent = ({ menuItems, onClose, onLogout }) => {
             </div>
           </div>
 
-          {/* Close Button - Only on Mobile */}
           {onClose && (
             <button
               onClick={onClose}
-              className="absolute right-6 text-2xl p-2 rounded-xl hover:bg-white/10 transition md:hidden"
+              className="text-2xl p-2 rounded-xl hover:bg-white/10 transition"
             >
               <FaTimes />
             </button>
@@ -180,19 +238,34 @@ const SidebarContent = ({ menuItems, onClose, onLogout }) => {
         </div>
       </div>
 
+       <div className="hidden md:block p-4 border-b border-blue-900/30 text-center">
+        <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl px-6 py-2 shadow-2xl shadow-blue-900/60">
+          <div className="flex flex-col items-center gap-2 ">
+            <div className="bg-white/20 backdrop-blur-md font-extrabold tracking-widest text-2xl px-6 py-3 rounded-2xl border-2 border-white/30 shadow-xl">
+              Developer
+            </div>
+            <div className="text-center">
+              <p className="text-blue-200 text-lg">Dashboard</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Profile Section */}
-      <div className="p-6 bg-gradient-to-r from-purple-900/40 to-pink-900/30 backdrop-blur-md border-b border-white/10">
+      <div className="md:mt-4 p-6 bg-gradient-to-r from-purple-900/40 to-pink-900/30 backdrop-blur-md border-b border-white/10">
         <div className="flex items-center gap-4">
           <div className="relative">
-            <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-2xl font-bold ring-4 ring-white/20">
-              S
+            <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-2xl font-bold ring-4 ring-white/20 shadow-lg">
+              {displayName.charAt(0).toUpperCase()}
             </div>
             <div className="absolute bottom-0 right-0 w-5 h-5 bg-green-500 rounded-full border-4 border-black"></div>
           </div>
-          <div>
-            <h3 className="font-bold text-lg">Supper IT</h3>
-            <p className="text-sm text-gray-300">support@gmail.com</p>
-            <p className="text-xs text-gray-400 mt-1">Joined Dec 2025</p>
+          <div className="flex-1">
+            <h3 className="font-bold text-lg truncate max-w-[200px]">
+              {displayName}
+            </h3>
+            <p className="text-sm text-gray-300 truncate">{displayEmail}</p>
+            <p className="text-xs text-gray-400 mt-1">Joined {joinedDate}</p>
           </div>
         </div>
       </div>
@@ -218,19 +291,6 @@ const SidebarContent = ({ menuItems, onClose, onLogout }) => {
               {item.icon}
             </motion.span>
             <span className="font-medium z-10">{item.text}</span>
-
-            {/* Active Indicator Background */}
-            {({ isActive }) =>
-              isActive && (
-                <motion.div
-                  layoutId="sidebarActiveBg"
-                  className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3 }}
-                />
-              )
-            }
           </NavLink>
         ))}
       </nav>
@@ -239,7 +299,7 @@ const SidebarContent = ({ menuItems, onClose, onLogout }) => {
       <div className="p-6 border-t border-white/10">
         <button
           onClick={onLogout}
-          className="w-full flex cursor-pointer items-center gap-4 px-6 py-4 rounded-2xl bg-red-500/15 hover:bg-red-500/25 text-red-400 hover:text-red-300 transition-all duration-300 group"
+          className="w-full cursor-pointer flex items-center gap-4 px-6 py-4 rounded-2xl bg-red-500/15 hover:bg-red-500/25 text-red-400 hover:text-red-300 transition-all duration-300 group"
         >
           <motion.span
             whileHover={{ scale: 1.15, rotate: 90 }}

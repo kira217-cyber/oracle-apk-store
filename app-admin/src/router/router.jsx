@@ -4,6 +4,13 @@ import Home from "../pages/Home/Home";
 import AllApk from "../pages/AllApk/AllApk";
 import NotFoundPage from "../pages/NotFoundPage/NotFoundPage";
 import AllUser from "../pages/AllUser/AllUser";
+import Login from "../pages/Login/Login";
+import PrivateRoute from "../PrivateRoute/PrivateRoute";
+import Revenue from "../pages/Revenue/Revenue";
+import Notifications from "../pages/Notifications/Notifications";
+import Wallets from "../pages/Wallets/Wallets";
+import Likes from "../pages/Likes/Likes";
+import Analytics from "../pages/Analytics/Analytics";
 
 export const routes = createBrowserRouter([
   {
@@ -13,16 +20,74 @@ export const routes = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Home></Home>,
+        element: (
+          <PrivateRoute>
+            {" "}
+            <Home></Home>{" "}
+          </PrivateRoute>
+        ),
       },
       {
         path: "all-apk",
-        element: <AllApk></AllApk>,
+        element: (
+          <PrivateRoute>
+            {" "}
+            <AllApk></AllApk>{" "}
+          </PrivateRoute>
+        ),
       },
       {
         path: "all-user",
-        element: <AllUser></AllUser>,
+        element: (
+          <PrivateRoute>
+            <AllUser></AllUser>{" "}
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "revenue",
+        element: (
+          <PrivateRoute>
+            <Revenue></Revenue>{" "}
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "notifications",
+        element: (
+          <PrivateRoute>
+            <Notifications></Notifications>{" "}
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "analytics",
+        element: (
+          <PrivateRoute>
+            <Analytics></Analytics>{" "}
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "likes",
+        element: (
+          <PrivateRoute>
+            <Likes></Likes>{" "}
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "wallets",
+        element: (
+          <PrivateRoute>
+            <Wallets></Wallets>{" "}
+          </PrivateRoute>
+        ),
       },
     ],
+  },
+  {
+    path: "login",
+    element: <Login></Login>,
   },
 ]);

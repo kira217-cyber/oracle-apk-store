@@ -65,6 +65,10 @@ const Register = () => {
     mutation.mutate(payload);
   };
 
+  const handleGoogleLogin = () => {
+    toast.info("Google Login Coming Soon!");
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center px-2 py-6 md:px-4 md:py-12">
       <motion.div
@@ -228,6 +232,7 @@ const Register = () => {
         {/* Google Login (Demo) */}
         <button
           type="button"
+          onClick={handleGoogleLogin}
           className="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-300 text-gray-700 font-medium cursor-pointer py-4 rounded-xl hover:bg-gray-50 transition"
         >
           <FcGoogle size={24} />
