@@ -20,6 +20,8 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify"; // Make sure you have react-toastify installed
 import { useAuth } from "../../../hooks/useAuth";
+import { IoIosApps } from "react-icons/io";
+
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -36,6 +38,7 @@ const Sidebar = () => {
   const menuItems = [
     { to: "/", icon: <FaHome />, text: "Dashboard" },
     { to: "/profile", icon: <FaUser />, text: "Profile" },
+    { to: "/upload-apk", icon: <IoIosApps />, text: "Publish APK" },
     { to: "/all-apk", icon: <FaDownload />, text: "All Apps" },
     { to: "/refer-link", icon: <FaLink />, text: "Refer & Earn" },
     { to: "/withdraw", icon: <FaWallet />, text: "Withdraw" },
