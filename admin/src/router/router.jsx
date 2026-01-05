@@ -11,6 +11,7 @@ import NotFoundPage from "../pages/NotFoundPage/NotFoundPage";
 import Register from "../pages/Register/Register";
 import Login from "../pages/Login/Login";
 import PrivateRoute from "../PrivateRoute/PrivateRoute";
+import UploadApk from "../pages/UploadApk/UploadApk";
 
 export const routes = createBrowserRouter([
   {
@@ -77,6 +78,15 @@ export const routes = createBrowserRouter([
           <PrivateRoute>
             {" "}
             <BoostApp></BoostApp>{" "}
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "upload-apk",
+        element: (
+          <PrivateRoute>
+            {" "}
+            <UploadApk></UploadApk>{" "}
           </PrivateRoute>
         ),
       },

@@ -23,7 +23,8 @@ const Navbar = () => {
 
   const handleBecomeDeveloper = () => {
     setDropdownOpen(false);
-    navigate("/register");
+    const url = import.meta.env.VITE_DEVELOPER_REGISTER_LINK;
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   // বাইরে ক্লিক করলে ড্রপডাউন বন্ধ (ডেস্কটপ + মোবাইল দুটোতেই)
@@ -51,7 +52,6 @@ const Navbar = () => {
       <nav className="w-full bg-white shadow-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between h-16">
-
             {/* Logo */}
             <Link to="/" className="flex items-center gap-3">
               <img
@@ -59,7 +59,9 @@ const Navbar = () => {
                 alt="Oracle Store"
                 className="w-10 h-10 object-contain"
               />
-              <span className="font-bold text-xl text-gray-800">ORACLE STORE</span>
+              <span className="font-bold text-xl text-gray-800">
+                ORACLE STORE
+              </span>
             </Link>
 
             {/* Desktop Navigation Links */}
@@ -67,7 +69,11 @@ const Navbar = () => {
               <NavLink
                 to="/"
                 className={({ isActive }) =>
-                  `font-semibold text-md transition ${isActive ? "text-green-700 font-bold" : "hover:text-green-700"}`
+                  `font-semibold text-md transition ${
+                    isActive
+                      ? "text-green-700 font-bold"
+                      : "hover:text-green-700"
+                  }`
                 }
               >
                 HOME
@@ -75,7 +81,11 @@ const Navbar = () => {
               <NavLink
                 to="/android"
                 className={({ isActive }) =>
-                  `font-semibold text-md transition ${isActive ? "text-green-700 font-bold" : "hover:text-green-700"}`
+                  `font-semibold text-md transition ${
+                    isActive
+                      ? "text-green-700 font-bold"
+                      : "hover:text-green-700"
+                  }`
                 }
               >
                 ANDROID APP
@@ -83,7 +93,11 @@ const Navbar = () => {
               <NavLink
                 to="/app-details"
                 className={({ isActive }) =>
-                  `font-semibold text-md transition ${isActive ? "text-green-700 font-bold" : "hover:text-green-700"}`
+                  `font-semibold text-md transition ${
+                    isActive
+                      ? "text-green-700 font-bold"
+                      : "hover:text-green-700"
+                  }`
                 }
               >
                 ISO APP
@@ -126,13 +140,19 @@ const Navbar = () => {
                     className={`
                       absolute right-0 top-14 w-64 bg-white text-black rounded-xl shadow-2xl z-50 overflow-hidden
                       transition-all duration-300
-                      ${dropdownOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-4 pointer-events-none"}
+                      ${
+                        dropdownOpen
+                          ? "opacity-100 visible translate-y-0"
+                          : "opacity-0 invisible -translate-y-4 pointer-events-none"
+                      }
                     `}
                   >
                     <div className="py-4 px-5">
                       <div className="mb-4 pb-3 border-b border-gray-700">
                         <p className="font-semibold text-base">{user.name}</p>
-                        <p className="text-sm text-gray-400 truncate">{user.email}</p>
+                        <p className="text-sm text-gray-400 truncate">
+                          {user.email}
+                        </p>
                       </div>
 
                       <button
@@ -152,23 +172,23 @@ const Navbar = () => {
                     </div>
 
                     {/* Arrow */}
-                <div className="absolute -top-2 right-5 w-4 h-4 bg-gray-900 rotate-45 z-50"></div>
+                    <div className="absolute -top-2 right-5 w-4 h-4 bg-gray-900 rotate-45 z-50"></div>
                   </div>
                 </div>
               ) : (
                 <>
                   <Link
                     to="/login"
-                    className="px-4 py-1 md:px-6 md:py-2 rounded-full border-2 border-green-700 text-green-700 font-medium hover:bg-green-700 hover:text-white transition"
+                    className="px-4 py-1 md:px-6 cursor-pointer md:py-2 rounded-full border-2 border-green-700 text-green-700 font-medium hover:bg-green-700 hover:text-white transition"
                   >
                     Login
                   </Link>
-                  <Link
-                    to="/register"
-                    className="hidden md:block px-6 py-2 rounded-full bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
+                  <button
+                    onClick={handleBecomeDeveloper}
+                    className="hidden md:block px-6 cursor-pointer py-2 rounded-full bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
                   >
                     Publish APK
-                  </Link>
+                  </button>
                 </>
               )}
             </div>
