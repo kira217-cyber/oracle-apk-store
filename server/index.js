@@ -5,6 +5,7 @@ import connectDB from "./config/db.js";
 import userRoutes from "./routes/userRoutes.js";
 import developerRoutes from "./routes/developerRoutes.js";
 import uploadApkRoutes from "./routes/uploadApkRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ connectDB();
 app.use("/api/users", userRoutes);
 app.use("/api/developer", developerRoutes);
 app.use("/api", uploadApkRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.get("/", (req, res) => {
   res.send("Apk Store Server Running...");

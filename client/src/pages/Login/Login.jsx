@@ -50,6 +50,10 @@ const Login = () => {
     mutation.mutate({ email: data.email, password: data.password });
   };
 
+ const handleGoogleLogin = () =>{
+  toast.info("Google Login Coming Soon!")
+ }
+
   return (
     <div className="min-h-screen flex items-center justify-center px-2 md:px-4">
       <motion.div
@@ -142,7 +146,7 @@ const Login = () => {
         </div>
 
         {/* Google Login (Demo) */}
-        <button className="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-300 text-gray-700 cursor-pointer font-medium py-4 rounded-xl hover:bg-gray-50 transition">
+        <button onClick={handleGoogleLogin} className="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-300 text-gray-700 cursor-pointer font-medium py-4 rounded-xl hover:bg-gray-50 transition">
           <FcGoogle size={24} />
           Continue with Google
         </button>

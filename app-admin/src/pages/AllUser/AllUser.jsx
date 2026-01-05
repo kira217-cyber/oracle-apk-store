@@ -3,7 +3,7 @@ import React from 'react';
 const AllUser = () => {
     return (
         <div>
-            All User
+            <h1 className="text-2xl text-red-600 text-center">No Include Api!</h1>
         </div>
     );
 };

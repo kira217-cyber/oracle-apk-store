@@ -95,5 +95,82 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// ==================== NEW GET APIs ====================
+
+// GET ALL DEVELOPERS (Admin only - you can add auth middleware later)
+router.get("/", async (req, res) => {
+  try {
+    const developers = await Developer.find({})
+      .select("-password") // Exclude password
+      .sort({ createdAt: -1 }); // Newest first
+
+    const formattedDevelopers = developers.map(dev => ({
+      id: dev._id,
+      firstName: dev.firstName,
+      lastName: dev.lastName,
+      email: dev.email,
+      accountType: dev.accountType,
+      companyName: dev.companyName,
+      fullName: dev.fullName,
+      country: dev.country,
+      whatsapp: dev.whatsapp,
+      website: dev.website,
+      role: dev.role,
+      createdAt: dev.createdAt,
+    }));
+
+    res.status(200).json({
+      success: true,
+      count: formattedDevelopers.length,
+      developers: formattedDevelopers,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// GET SINGLE DEVELOPER BY ID
+router.get("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const developer = await Developer.findById(id).select("-password");
+
+    if (!developer) {
+      return res.status(404).json({
+        success: false,
+        message: "Developer not found",
+      });
+    }
+
+    const developerResponse = {
+      id: developer._id,
+      firstName: developer.firstName,
+      lastName: developer.lastName,
+      email: developer.email,
+      accountType: developer.accountType,
+      companyName: developer.companyName,
+      fullName: developer.fullName,
+      country: developer.country,
+      whatsapp: developer.whatsapp,
+      website: developer.website,
+      role: developer.role,
+      createdAt: developer.createdAt,
+    };
+
+    res.status(200).json({
+      success: true,
+      developer: developerResponse,
+    });
+  } catch (err) {
+    console.error(err);
+    if (err.name === "CastError") {
+      return res.status(400).json({ success: false, message: "Invalid Developer ID" });
+    }
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
 
 export default router;
