@@ -1,3 +1,4 @@
+// src/components/UploadForm/Step2Form.jsx
 import React from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
@@ -5,7 +6,7 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import { useAuth } from "../../hooks/useAuth";
 import { useNavigate } from "react-router";
-import { toast } from "react-toastify"; // Using react-toastify
+import { toast } from "react-toastify";
 
 const Step2Form = ({ formData, onBack }) => {
   const { user } = useAuth();
@@ -69,7 +70,6 @@ const Step2Form = ({ formData, onBack }) => {
         }
       });
 
-      // Append authenticated user ID
       if (userId) {
         formDataToSend.append("user", userId);
       }
@@ -96,10 +96,7 @@ const Step2Form = ({ formData, onBack }) => {
         icon: "🚀",
         autoClose: 3000,
       });
-
-      setTimeout(() => {
-        navigate("/");
-      }, 1500);
+      setTimeout(() => navigate("/"), 1500);
     },
     onError: (err) => {
       toast.dismiss("upload-loading");
@@ -108,10 +105,7 @@ const Step2Form = ({ formData, onBack }) => {
         err.response?.data?.message ||
         err.message ||
         "Upload failed. Please try again.";
-
-      toast.error(`Upload Failed: ${errorMessage}`, {
-        autoClose: 5000,
-      });
+      toast.error(`Upload Failed: ${errorMessage}`, { autoClose: 5000 });
     },
   });
 
@@ -127,21 +121,48 @@ const Step2Form = ({ formData, onBack }) => {
     mutation.mutate(fullData);
   };
 
+  // Group questions in pairs for 2-per-row layout
+  const dataCollectionQuestions = [
+    [
+      {
+        name: "collectsUserData",
+        label: "Does your app collect any user data?",
+      },
+      { name: "bettingOrGambling", label: "Your app Betting or Gambling?" },
+    ],
+    [
+      { name: "earningOrAds", label: "Your app Earning or Ads Views?" },
+      { name: "mobileBanking", label: "Your app Mobile Banking or Financial?" },
+    ],
+    [
+      { name: "government", label: "Your Government?" },
+      {
+        name: "sharesDataWithThirdParties",
+        label: "Is any user data shared with third parties?",
+      },
+    ],
+    [
+      { name: "showsAds", label: "Does your app show ads?" },
+      null, // Empty slot to balance layout
+    ],
+  ];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -30 }}
       transition={{ duration: 0.6 }}
-      className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 md:p-12 shadow-2xl border border-white/10"
+      className="bg-gray-900/80 backdrop-blur-xl rounded-3xl p-8 md:p-12 shadow-2xl border border-orange-800/40"
     >
-      <h2 className="text-3xl md:text-4xl font-bold mb-10 text-center bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+      <h2 className="text-4xl md:text-5xl font-extrabold mb-10 text-center bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
         Step 2 – Data Safety & Developer Declaration
       </h2>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
         {/* Full About This App */}
         <div>
-          <label className="block text-xl font-semibold mb-3">
+          <label className="block text-xl font-semibold text-orange-300 mb-4">
             Full About This App
           </label>
           <Controller
@@ -153,82 +174,77 @@ const Step2Form = ({ formData, onBack }) => {
                 {...field}
                 rows={8}
                 placeholder="Provide a detailed description of your app..."
-                className="w-full px-6 py-4 bg-white/10 border border-white/20 rounded-2xl focus:outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition resize-none"
+                className="w-full px-6 py-5 bg-gray-800/70 border border-gray-700 rounded-2xl text-white placeholder-gray-500 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/20 outline-none transition duration-200 resize-none"
               />
             )}
           />
           {errors.fullAbout && (
-            <p className="text-red-400 mt-2">{errors.fullAbout.message}</p>
+            <p className="text-orange-400 mt-3 text-sm">
+              {errors.fullAbout.message}
+            </p>
           )}
         </div>
 
-        {/* Data Collection Questions */}
+        {/* Data Collection Questions – 2 per row */}
         <div className="space-y-10">
-          <h3 className="text-2xl font-bold text-purple-300">
+          <h3 className="text-2xl font-bold text-orange-300 flex items-center gap-3">
             📊 Data Collection
           </h3>
-          {[
-            {
-              name: "collectsUserData",
-              label: "Does your app collect any user data?",
-            },
-            {
-              name: "bettingOrGambling",
-              label: "Your app Betting or Gambling?",
-            },
-            { name: "earningOrAds", label: "Your app Earning or Ads Views?" },
-            {
-              name: "mobileBanking",
-              label: "Your app Mobile Banking or Financial?",
-            },
-            { name: "government", label: "Your Government?" },
-            {
-              name: "sharesDataWithThirdParties",
-              label: "Is any user data shared with third parties?",
-            },
-            { name: "showsAds", label: "Does your app show ads?" },
-          ].map(({ name, label }) => (
-            <div key={name}>
-              <label className="block text-lg font-medium mb-5">{label}</label>
-              <Controller
-                name={name}
-                control={control}
-                rules={{ required: "This field is required" }}
-                render={({ field }) => (
-                  <div className="flex gap-12">
-                    <label className="flex items-center gap-4 cursor-pointer hover:bg-white/5 px-6 py-4 rounded-2xl transition">
-                      <input
-                        type="radio"
-                        {...field}
-                        value="Yes"
-                        checked={field.value === "Yes"}
-                        className="w-6 h-6 accent-purple-500 cursor-pointer"
-                      />
-                      <span className="text-lg font-medium">Yes</span>
+
+          {dataCollectionQuestions.map((pair, pairIndex) => (
+            <div
+              key={pairIndex}
+              className="grid grid-cols-1 md:grid-cols-2 gap-8"
+            >
+              {pair.map((question) =>
+                question ? (
+                  <div key={question.name}>
+                    <label className="block text-lg font-medium text-gray-200 mb-5">
+                      {question.label}
                     </label>
-                    <label className="flex items-center gap-4 cursor-pointer hover:bg-white/5 px-6 py-4 rounded-2xl transition">
-                      <input
-                        type="radio"
-                        {...field}
-                        value="No"
-                        checked={field.value === "No"}
-                        className="w-6 h-6 accent-purple-500 cursor-pointer"
-                      />
-                      <span className="text-lg font-medium">No</span>
-                    </label>
+                    <Controller
+                      name={question.name}
+                      control={control}
+                      rules={{ required: "This field is required" }}
+                      render={({ field }) => (
+                        <div className="flex gap-8">
+                          {["Yes", "No"].map((option) => (
+                            <label
+                              key={option}
+                              className="flex items-center gap-4 cursor-pointer hover:bg-orange-900/30 px-2 py-5 rounded-2xl transition flex-1"
+                            >
+                              <input
+                                type="radio"
+                                {...field}
+                                value={option}
+                                checked={field.value === option}
+                                className="w-7 h-7 accent-orange-500 cursor-pointer"
+                              />
+                              <span className="text-lg font-medium text-gray-100">
+                                {option}
+                              </span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                    />
+                    {errors[question.name] && (
+                      <p className="text-orange-400 mt-3 text-sm">
+                        {errors[question.name].message}
+                      </p>
+                    )}
                   </div>
-                )}
-              />
-              {errors[name] && (
-                <p className="text-red-400 mt-3">{errors[name].message}</p>
+                ) : (
+                  <div key="empty" /> // Empty column for balance
+                )
               )}
             </div>
           ))}
         </div>
 
-        {/* Children’s Data */}
+        {/* Intended for Children */}
         <div>
-          <label className="block text-lg font-medium mb-5">
+          <label className="block text-lg font-medium text-gray-200 mb-5">
             Is your app intended for children under 13?
           </label>
           <Controller
@@ -236,37 +252,24 @@ const Step2Form = ({ formData, onBack }) => {
             control={control}
             rules={{ required: "This field is required" }}
             render={({ field }) => (
-              <div className="flex gap-12">
-                <label className="flex items-center gap-4 cursor-pointer hover:bg-white/5 px-6 py-4 rounded-2xl transition">
-                  <input
-                    type="radio"
-                    {...field}
-                    value="Yes"
-                    checked={field.value === "Yes"}
-                    className="w-6 h-6 accent-purple-500 cursor-pointer"
-                  />
-                  <span className="text-lg font-medium">Yes</span>
-                </label>
-                <label className="flex items-center gap-4 cursor-pointer hover:bg-white/5 px-6 py-4 rounded-2xl transition">
-                  <input
-                    type="radio"
-                    {...field}
-                    value="No"
-                    checked={field.value === "No"}
-                    className="w-6 h-6 accent-purple-500 cursor-pointer"
-                  />
-                  <span className="text-lg font-medium">No</span>
-                </label>
-                <label className="flex items-center gap-4 cursor-pointer hover:bg-white/5 px-6 py-4 rounded-2xl transition">
-                  <input
-                    type="radio"
-                    {...field}
-                    value="Both"
-                    checked={field.value === "Both"}
-                    className="w-6 h-6 accent-purple-500 cursor-pointer"
-                  />
-                  <span className="text-lg font-medium">Both</span>
-                </label>
+              <div className="flex flex-wrap gap-8">
+                {["Yes", "No", "Both"].map((option) => (
+                  <label
+                    key={option}
+                    className="flex items-center gap-4 cursor-pointer hover:bg-orange-900/30 px-8 py-5 rounded-2xl transition"
+                  >
+                    <input
+                      type="radio"
+                      {...field}
+                      value={option}
+                      checked={field.value === option}
+                      className="w-7 h-7 accent-orange-500 cursor-pointer"
+                    />
+                    <span className="text-lg font-medium text-gray-100">
+                      {option}
+                    </span>
+                  </label>
+                ))}
               </div>
             )}
           />
@@ -275,11 +278,13 @@ const Step2Form = ({ formData, onBack }) => {
         {/* Child Data Types */}
         {intendedForChildren === "Yes" && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="space-y-5"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.5 }}
+            className="space-y-6"
           >
-            <label className="block text-lg font-medium">
+            <label className="block text-lg font-medium text-orange-300">
               If Yes, please select all that apply:
             </label>
             <Controller
@@ -301,7 +306,7 @@ const Step2Form = ({ formData, onBack }) => {
                   ].map((item) => (
                     <label
                       key={item}
-                      className="flex items-center gap-4 cursor-pointer hover:bg-white/5 px-5 py-4 rounded-2xl transition"
+                      className="flex items-center gap-4 cursor-pointer hover:bg-orange-900/30 px-6 py-5 rounded-2xl transition"
                     >
                       <input
                         type="checkbox"
@@ -313,9 +318,9 @@ const Step2Form = ({ formData, onBack }) => {
                             : field.value.filter((v) => v !== item);
                           field.onChange(newVal);
                         }}
-                        className="w-6 h-6 accent-purple-500 rounded cursor-pointer"
+                        className="w-7 h-7 accent-orange-500 rounded cursor-pointer"
                       />
-                      <span className="text-base">{item}</span>
+                      <span className="text-base text-gray-200">{item}</span>
                     </label>
                   ))}
                 </div>
@@ -326,7 +331,7 @@ const Step2Form = ({ formData, onBack }) => {
 
         {/* Purpose of Data Collection */}
         <div>
-          <label className="block text-lg font-medium mb-5">
+          <label className="block text-lg font-medium text-orange-300 mb-5">
             Why do you collect this data? (Select all that apply)
           </label>
           <Controller
@@ -347,7 +352,7 @@ const Step2Form = ({ formData, onBack }) => {
                 ].map((item) => (
                   <label
                     key={item}
-                    className="flex items-center gap-4 cursor-pointer hover:bg-white/5 px-5 py-4 rounded-2xl transition"
+                    className="flex items-center gap-4 cursor-pointer hover:bg-orange-900/30 px-6 py-5 rounded-2xl transition"
                   >
                     <input
                       type="checkbox"
@@ -359,9 +364,9 @@ const Step2Form = ({ formData, onBack }) => {
                           : field.value.filter((v) => v !== item);
                         field.onChange(newVal);
                       }}
-                      className="w-6 h-6 accent-purple-500 rounded cursor-pointer"
+                      className="w-7 h-7 accent-orange-500 rounded cursor-pointer"
                     />
-                    <span>{item}</span>
+                    <span className="text-gray-200">{item}</span>
                   </label>
                 ))}
               </div>
@@ -371,8 +376,12 @@ const Step2Form = ({ formData, onBack }) => {
 
         {/* Data Shared With */}
         {sharesDataWithThirdParties === "Yes" && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <label className="block text-lg font-medium mb-5">
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            transition={{ duration: 0.5 }}
+          >
+            <label className="block text-lg font-medium text-orange-300 mb-5">
               If Yes, data may be shared with:
             </label>
             <Controller
@@ -390,7 +399,7 @@ const Step2Form = ({ formData, onBack }) => {
                   ].map((item) => (
                     <label
                       key={item}
-                      className="flex items-center gap-4 cursor-pointer hover:bg-white/5 px-5 py-4 rounded-2xl transition"
+                      className="flex items-center gap-4 cursor-pointer hover:bg-orange-900/30 px-6 py-5 rounded-2xl transition"
                     >
                       <input
                         type="checkbox"
@@ -402,9 +411,9 @@ const Step2Form = ({ formData, onBack }) => {
                             : field.value.filter((v) => v !== item);
                           field.onChange(newVal);
                         }}
-                        className="w-6 h-6 accent-purple-500 rounded cursor-pointer"
+                        className="w-7 h-7 accent-orange-500 rounded cursor-pointer"
                       />
-                      <span>{item}</span>
+                      <span className="text-gray-200">{item}</span>
                     </label>
                   ))}
                 </div>
@@ -415,7 +424,7 @@ const Step2Form = ({ formData, onBack }) => {
 
         {/* Data Protection */}
         <div>
-          <label className="block text-lg font-medium mb-5">
+          <label className="block text-lg font-medium text-orange-300 mb-5">
             How is user data protected?
           </label>
           <Controller
@@ -432,7 +441,7 @@ const Step2Form = ({ formData, onBack }) => {
                 ].map((item) => (
                   <label
                     key={item}
-                    className="flex items-center gap-4 cursor-pointer hover:bg-white/5 px-5 py-4 rounded-2xl transition"
+                    className="flex items-center gap-4 cursor-pointer hover:bg-orange-900/30 px-6 py-5 rounded-2xl transition"
                   >
                     <input
                       type="checkbox"
@@ -444,9 +453,9 @@ const Step2Form = ({ formData, onBack }) => {
                           : field.value.filter((v) => v !== item);
                         field.onChange(newVal);
                       }}
-                      className="w-6 h-6 accent-purple-500 rounded cursor-pointer"
+                      className="w-7 h-7 accent-orange-500 rounded cursor-pointer"
                     />
-                    <span>{item}</span>
+                    <span className="text-gray-200">{item}</span>
                   </label>
                 ))}
               </div>
@@ -456,50 +465,37 @@ const Step2Form = ({ formData, onBack }) => {
 
         {/* Data Retention */}
         <div>
-          <label className="block text-lg font-medium mb-5">
+          <label className="block text-lg font-medium text-orange-300 mb-5">
             Data retention period:
           </label>
           <Controller
             name="dataRetention"
             control={control}
             render={({ field }) => (
-              <div className="space-y-5">
-                <label className="flex items-center gap-4 cursor-pointer hover:bg-white/5 px-5 py-4 rounded-2xl transition">
-                  <input
-                    type="checkbox"
-                    value="Until account deletion"
-                    checked={field.value.includes("Until account deletion")}
-                    onChange={(e) => {
-                      const newVal = e.target.checked
-                        ? [...field.value, "Until account deletion"]
-                        : field.value.filter(
-                            (v) => v !== "Until account deletion"
-                          );
-                      field.onChange(newVal);
-                    }}
-                    className="w-6 h-6 accent-purple-500 rounded cursor-pointer"
-                  />
-                  <span>Until account deletion</span>
-                </label>
-                <label className="flex items-center gap-4 cursor-pointer hover:bg-white/5 px-5 py-4 rounded-2xl transition">
-                  <input
-                    type="checkbox"
-                    value="Fixed period (Specify duration)"
-                    checked={field.value.includes(
-                      "Fixed period (Specify duration)"
-                    )}
-                    onChange={(e) => {
-                      const newVal = e.target.checked
-                        ? [...field.value, "Fixed period (Specify duration)"]
-                        : field.value.filter(
-                            (v) => v !== "Fixed period (Specify duration)"
-                          );
-                      field.onChange(newVal);
-                    }}
-                    className="w-6 h-6 accent-purple-500 rounded cursor-pointer"
-                  />
-                  <span>Fixed period (Specify duration)</span>
-                </label>
+              <div className="space-y-6">
+                {[
+                  "Until account deletion",
+                  "Fixed period (Specify duration)",
+                ].map((item) => (
+                  <label
+                    key={item}
+                    className="flex items-center gap-4 cursor-pointer hover:bg-orange-900/30 px-6 py-5 rounded-2xl transition"
+                  >
+                    <input
+                      type="checkbox"
+                      value={item}
+                      checked={field.value.includes(item)}
+                      onChange={(e) => {
+                        const newVal = e.target.checked
+                          ? [...field.value, item]
+                          : field.value.filter((v) => v !== item);
+                        field.onChange(newVal);
+                      }}
+                      className="w-7 h-7 accent-orange-500 rounded cursor-pointer"
+                    />
+                    <span className="text-gray-200">{item}</span>
+                  </label>
+                ))}
               </div>
             )}
           />
@@ -507,7 +503,7 @@ const Step2Form = ({ formData, onBack }) => {
 
         {/* User Controls */}
         <div>
-          <label className="block text-lg font-medium mb-5">
+          <label className="block text-lg font-medium text-orange-300 mb-5">
             Does your app allow users to:
           </label>
           <Controller
@@ -524,7 +520,7 @@ const Step2Form = ({ formData, onBack }) => {
                 ].map((item) => (
                   <label
                     key={item}
-                    className="flex items-center gap-4 cursor-pointer hover:bg-white/5 px-5 py-4 rounded-2xl transition"
+                    className="flex items-center gap-4 cursor-pointer hover:bg-orange-900/30 px-6 py-5 rounded-2xl transition"
                   >
                     <input
                       type="checkbox"
@@ -536,9 +532,9 @@ const Step2Form = ({ formData, onBack }) => {
                           : field.value.filter((v) => v !== item);
                         field.onChange(newVal);
                       }}
-                      className="w-6 h-6 accent-purple-500 rounded cursor-pointer"
+                      className="w-7 h-7 accent-orange-500 rounded cursor-pointer"
                     />
-                    <span>{item}</span>
+                    <span className="text-gray-200">{item}</span>
                   </label>
                 ))}
               </div>
@@ -548,8 +544,12 @@ const Step2Form = ({ formData, onBack }) => {
 
         {/* Child Compliance */}
         {intendedForChildren === "Yes" && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <label className="block text-lg font-medium mb-5">
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            transition={{ duration: 0.5 }}
+          >
+            <label className="block text-lg font-medium text-orange-300 mb-5">
               If Yes (COPPA compliance):
             </label>
             <Controller
@@ -565,7 +565,7 @@ const Step2Form = ({ formData, onBack }) => {
                   ].map((item) => (
                     <label
                       key={item}
-                      className="flex items-center gap-4 cursor-pointer hover:bg-white/5 px-5 py-4 rounded-2xl transition"
+                      className="flex items-center gap-4 cursor-pointer hover:bg-orange-900/30 px-6 py-5 rounded-2xl transition"
                     >
                       <input
                         type="checkbox"
@@ -577,9 +577,9 @@ const Step2Form = ({ formData, onBack }) => {
                             : field.value.filter((v) => v !== item);
                           field.onChange(newVal);
                         }}
-                        className="w-6 h-6 accent-purple-500 rounded cursor-pointer"
+                        className="w-7 h-7 accent-orange-500 rounded cursor-pointer"
                       />
-                      <span>{item}</span>
+                      <span className="text-gray-200">{item}</span>
                     </label>
                   ))}
                 </div>
@@ -590,14 +590,14 @@ const Step2Form = ({ formData, onBack }) => {
 
         {/* Sensitive Permissions */}
         <div>
-          <label className="block text-lg font-medium mb-5">
+          <label className="block text-lg font-medium text-orange-300 mb-5">
             Does your app access sensitive permissions?
           </label>
           <Controller
             name="sensitivePermissions"
             control={control}
             render={({ field }) => (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
                 {[
                   "Location (foreground)",
                   "Location (background)",
@@ -609,7 +609,7 @@ const Step2Form = ({ formData, onBack }) => {
                 ].map((item) => (
                   <label
                     key={item}
-                    className="flex items-center gap-4 cursor-pointer hover:bg-white/5 px-5 py-4 rounded-2xl transition"
+                    className="flex items-center gap-4 cursor-pointer hover:bg-orange-900/30 px-6 py-5 rounded-2xl transition"
                   >
                     <input
                       type="checkbox"
@@ -621,9 +621,9 @@ const Step2Form = ({ formData, onBack }) => {
                           : field.value.filter((v) => v !== item);
                         field.onChange(newVal);
                       }}
-                      className="w-6 h-6 accent-purple-500 rounded cursor-pointer"
+                      className="w-7 h-7 accent-orange-500 rounded cursor-pointer"
                     />
-                    <span>{item}</span>
+                    <span className="text-gray-200">{item}</span>
                   </label>
                 ))}
               </div>
@@ -631,8 +631,12 @@ const Step2Form = ({ formData, onBack }) => {
           />
 
           {sensitivePermissions.length > 0 && (
-            <>
-              <label className="block text-lg font-medium mb-3">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4 }}
+            >
+              <label className="block text-lg font-medium text-orange-300 mb-3">
                 Reason for access (required):
               </label>
               <Controller
@@ -647,25 +651,29 @@ const Step2Form = ({ formData, onBack }) => {
                 render={({ field }) => (
                   <textarea
                     {...field}
-                    rows={5}
+                    rows={6}
                     placeholder="Explain why your app needs these permissions..."
-                    className="w-full px-6 py-4 bg-white/10 border border-white/20 rounded-2xl focus:outline-none focus:border-purple-500 transition resize-none"
+                    className="w-full px-6 py-5 bg-gray-800/70 border border-gray-700 rounded-2xl text-white placeholder-gray-500 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/20 outline-none transition duration-200 resize-none"
                   />
                 )}
               />
               {errors.permissionReason && (
-                <p className="text-red-400 mt-3">
+                <p className="text-orange-400 mt-3 text-sm">
                   {errors.permissionReason.message}
                 </p>
               )}
-            </>
+            </motion.div>
           )}
         </div>
 
         {/* Advertising Details */}
         {showsAds === "Yes" && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <label className="block text-lg font-medium mb-5">
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            transition={{ duration: 0.5 }}
+          >
+            <label className="block text-lg font-medium text-orange-300 mb-5">
               Advertising & Tracking:
             </label>
             <Controller
@@ -680,7 +688,7 @@ const Step2Form = ({ formData, onBack }) => {
                   ].map((item) => (
                     <label
                       key={item}
-                      className="flex items-center gap-4 cursor-pointer hover:bg-white/5 px-5 py-4 rounded-2xl transition"
+                      className="flex items-center gap-4 cursor-pointer hover:bg-orange-900/30 px-6 py-5 rounded-2xl transition"
                     >
                       <input
                         type="checkbox"
@@ -692,9 +700,9 @@ const Step2Form = ({ formData, onBack }) => {
                             : field.value.filter((v) => v !== item);
                           field.onChange(newVal);
                         }}
-                        className="w-6 h-6 accent-purple-500 rounded cursor-pointer"
+                        className="w-7 h-7 accent-orange-500 rounded cursor-pointer"
                       />
-                      <span>{item}</span>
+                      <span className="text-gray-200">{item}</span>
                     </label>
                   ))}
                 </div>
@@ -705,7 +713,7 @@ const Step2Form = ({ formData, onBack }) => {
 
         {/* Support Contact */}
         <div>
-          <label className="block text-lg font-medium mb-3">
+          <label className="block text-lg font-medium text-orange-300 mb-3">
             Support Email / Contact
           </label>
           <Controller
@@ -717,24 +725,25 @@ const Step2Form = ({ formData, onBack }) => {
                 {...field}
                 type="text"
                 placeholder="support@yourapp.com"
-                className="w-full px-6 py-4 bg-white/10 border border-white/20 rounded-2xl focus:outline-none focus:border-purple-500 transition"
+                className="w-full px-6 py-5 bg-gray-800/70 border border-gray-700 rounded-2xl text-white placeholder-gray-500 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/20 outline-none transition duration-200"
               />
             )}
           />
           {errors.supportContact && (
-            <p className="text-red-400 mt-3">{errors.supportContact.message}</p>
+            <p className="text-orange-400 mt-3 text-sm">
+              {errors.supportContact.message}
+            </p>
           )}
         </div>
 
-        {/* Developer Declaration */}
+        {/* Developer Declaration – Shortened */}
         <div>
-          <label className="block text-2xl font-bold mb-6 text-purple-300">
+          <label className="block text-2xl font-bold text-orange-300 mb-6">
             🔒 Developer Declaration
           </label>
-          <p className="text-gray-300 mb-8 leading-relaxed">
-            I confirm that the information provided above is accurate and that
-            my app complies with all applicable data protection laws, including
-            GDPR, CCPA, and marketplace policies.
+          <p className="text-gray-300 mb-8 leading-relaxed text-base">
+            I confirm that the information provided is accurate and my app
+            complies with all applicable laws and policies.
           </p>
           <Controller
             name="declarations"
@@ -744,16 +753,16 @@ const Step2Form = ({ formData, onBack }) => {
                 v.length === 4 || "You must agree to all declarations",
             }}
             render={({ field }) => (
-              <div className="space-y-6">
+              <div className="space-y-5">
                 {[
-                  "This App all info correct",
-                  "Trams & Conditions",
-                  "Refund Policy",
-                  "Data Safety correct",
+                  "All information is correct",
+                  "I agree to Terms & Conditions",
+                  "I agree to Refund Policy",
+                  "Data safety information is accurate",
                 ].map((text) => (
                   <label
                     key={text}
-                    className="flex items-center gap-5 cursor-pointer hover:bg-white/5 px-6 py-5 rounded-2xl transition text-lg"
+                    className="flex items-center gap-5 cursor-pointer hover:bg-orange-900/30 px-8 py-5 rounded-2xl transition text-base"
                   >
                     <input
                       type="checkbox"
@@ -765,48 +774,54 @@ const Step2Form = ({ formData, onBack }) => {
                           : field.value.filter((v) => v !== text);
                         field.onChange(newVal);
                       }}
-                      className="w-7 h-7 accent-purple-500 rounded cursor-pointer"
+                      className="w-7 h-7 accent-orange-500 rounded cursor-pointer"
                     />
-                    <span className="font-medium">{text}</span>
+                    <span className="font-medium text-gray-100">{text}</span>
                   </label>
                 ))}
               </div>
             )}
           />
           {errors.declarations && (
-            <p className="text-red-400 mt-4">{errors.declarations.message}</p>
+            <p className="text-orange-400 mt-5 text-sm">
+              {errors.declarations.message}
+            </p>
           )}
         </div>
 
         {/* Action Buttons */}
-        <div className="flex justify-between items-center pt-12">
-          <button
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-8 pt-12">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             type="button"
             onClick={onBack}
-            className="px-12 py-6 bg-gray-700/60 hover:bg-gray-600 rounded-2xl font-bold text-xl shadow-lg hover:shadow-xl transition transform hover:scale-105 cursor-pointer"
+            className="px-14 py-6 bg-gray-800/70 hover:bg-gray-700 rounded-2xl font-bold text-xl shadow-xl hover:shadow-orange-900/40 transition cursor-pointer"
           >
             ← Back to Step 1
-          </button>
+          </motion.button>
 
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             type="submit"
             disabled={mutation.isPending}
-            className="relative px-16 py-7 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl font-bold text-2xl shadow-2xl hover:shadow-purple-600/60 transition transform hover:scale-105 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
+            className="relative px-20 py-7 bg-gradient-to-r from-orange-600 to-orange-500 text-white font-bold text-2xl rounded-2xl shadow-2xl shadow-orange-900/60 hover:shadow-orange-900/80 transition duration-300 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {mutation.isPending ? (
               <>
                 <span className="opacity-0">Publish APK</span>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-8 h-8 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <div className="w-10 h-10 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
                 </div>
-                <span className="absolute inset-0 flex items-center justify-center text-white">
+                <span className="absolute inset-0 flex items-center justify-center">
                   Publishing...
                 </span>
               </>
             ) : (
               "🚀 Publish APK"
             )}
-          </button>
+          </motion.button>
         </div>
       </form>
     </motion.div>
