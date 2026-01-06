@@ -1,3 +1,4 @@
+// src/components/UploadForm/Step1Form.jsx
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { motion } from "framer-motion";
@@ -50,7 +51,6 @@ const Step1Form = ({ onNext, formData = {}, setFormData }) => {
     setTags(tags.filter((t) => t !== tag));
   };
 
-  // Remove functions
   const removeLogo = () => setValue("apkLogo", null);
   const removeVideo = () => setValue("uploadVideo", null);
   const removeScreenshot = (index) => {
@@ -82,17 +82,20 @@ const Step1Form = ({ onNext, formData = {}, setFormData }) => {
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -30 }}
       transition={{ duration: 0.6 }}
-      className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 md:p-12 shadow-2xl border border-white/10 mb-10"
+      className="bg-gray-900/80 backdrop-blur-xl rounded-3xl p-8 md:p-12 shadow-2xl border border-orange-800/40"
     >
-      <h2 className="text-3xl md:text-4xl font-bold mb-10 text-center bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+      <h2 className="text-4xl md:text-5xl font-extrabold mb-10 text-center bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
         Step 1 – App Details
       </h2>
 
-      <form onSubmit={handleSubmit(onSubmitStep1)} className="space-y-8">
+      <form onSubmit={handleSubmit(onSubmitStep1)} className="space-y-10">
         {/* APK Title */}
         <div>
-          <label className="block text-xl font-semibold mb-3">APK Title</label>
+          <label className="block text-xl font-semibold text-orange-300 mb-3">
+            APK Title
+          </label>
           <Controller
             name="apkTitle"
             control={control}
@@ -101,18 +104,20 @@ const Step1Form = ({ onNext, formData = {}, setFormData }) => {
               <input
                 {...field}
                 placeholder="e.g. My Awesome App"
-                className="w-full px-6 py-4 bg-white/10 border border-white/20 rounded-2xl focus:outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition"
+                className="w-full px-6 py-5 bg-gray-800/70 border border-gray-700 rounded-2xl text-white placeholder-gray-500 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/20 outline-none transition duration-200"
               />
             )}
           />
           {errors.apkTitle && (
-            <p className="text-red-400 mt-2">{errors.apkTitle.message}</p>
+            <p className="text-orange-400 mt-2 text-sm">
+              {errors.apkTitle.message}
+            </p>
           )}
         </div>
 
         {/* App Category */}
         <div>
-          <label className="block text-xl font-semibold mb-3">
+          <label className="block text-xl font-semibold text-orange-300 mb-3">
             App Category
           </label>
           <Controller
@@ -122,11 +127,9 @@ const Step1Form = ({ onNext, formData = {}, setFormData }) => {
             render={({ field }) => (
               <select
                 {...field}
-                className="w-full px-6 py-4 bg-white/10 border border-white/20 rounded-2xl focus:outline-none focus:border-purple-500 transition cursor-pointer"
+                className="w-full px-6 py-5 bg-gray-800/70 border border-gray-700 rounded-2xl text-white focus:border-orange-500 focus:ring-4 focus:ring-orange-500/20 outline-none transition duration-200 cursor-pointer"
               >
-                <option className="text-black" value="">
-                  Select a category
-                </option>
+                <option value="">Select a category</option>
                 {[
                   "Games",
                   "Tools",
@@ -138,7 +141,7 @@ const Step1Form = ({ onNext, formData = {}, setFormData }) => {
                   "Photography",
                   "Music",
                 ].map((cat) => (
-                  <option className="text-black" key={cat} value={cat}>
+                  <option key={cat} value={cat}>
                     {cat}
                   </option>
                 ))}
@@ -146,13 +149,15 @@ const Step1Form = ({ onNext, formData = {}, setFormData }) => {
             )}
           />
           {errors.appCategory && (
-            <p className="text-red-400 mt-2">{errors.appCategory.message}</p>
+            <p className="text-orange-400 mt-2 text-sm">
+              {errors.appCategory.message}
+            </p>
           )}
         </div>
 
         {/* Short Description */}
         <div>
-          <label className="block text-xl font-semibold mb-3">
+          <label className="block text-xl font-semibold text-orange-300 mb-3">
             Short Description
           </label>
           <Controller
@@ -162,22 +167,22 @@ const Step1Form = ({ onNext, formData = {}, setFormData }) => {
             render={({ field }) => (
               <textarea
                 {...field}
-                rows={4}
+                rows={5}
                 placeholder="Briefly describe your app..."
-                className="w-full px-6 py-4 bg-white/10 border border-white/20 rounded-2xl focus:outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition"
+                className="w-full px-6 py-5 bg-gray-800/70 border border-gray-700 rounded-2xl text-white placeholder-gray-500 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/20 outline-none transition duration-200 resize-none"
               />
             )}
           />
           {errors.shortDescription && (
-            <p className="text-red-400 mt-2">
+            <p className="text-orange-400 mt-2 text-sm">
               {errors.shortDescription.message}
             </p>
           )}
         </div>
 
-        {/* APK Logo Upload + Preview */}
+        {/* APK Logo */}
         <div>
-          <label className="block text-xl font-semibold mb-3">
+          <label className="block text-xl font-semibold text-orange-300 mb-3">
             APK Logo (Image Only)
           </label>
           <Controller
@@ -189,36 +194,37 @@ const Step1Form = ({ onNext, formData = {}, setFormData }) => {
                 type="file"
                 accept="image/*"
                 onChange={(e) => onChange(e.target.files?.[0] || null)}
-                className="w-full px-6 py-4 bg-white/10 border border-white/20 rounded-2xl file:mr-6 file:py-3 file:px-8 file:rounded-xl file:border-0 file:bg-gradient-to-r file:from-purple-600 file:to-pink-600 file:text-white file:font-bold cursor-pointer"
+                className="w-full px-6 py-5 bg-gray-800/70 border border-gray-700 rounded-2xl file:mr-6 file:py-4 file:px-10 file:rounded-xl file:border-0 file:bg-gradient-to-r file:from-orange-600 file:to-orange-500 file:text-white file:font-bold cursor-pointer transition"
               />
             )}
           />
           {errors.apkLogo && (
-            <p className="text-red-400 mt-2">{errors.apkLogo.message}</p>
+            <p className="text-orange-400 mt-2 text-sm">
+              {errors.apkLogo.message}
+            </p>
           )}
 
-          {/* Logo Preview */}
           {apkLogo && (
-            <div className="mt-4 relative inline-block">
+            <div className="mt-6 relative inline-block">
               <img
                 src={URL.createObjectURL(apkLogo)}
                 alt="App Logo Preview"
-                className="w-32 h-32 object-cover rounded-2xl border-4 border-purple-500/50 shadow-xl"
+                className="w-40 h-40 object-cover rounded-3xl border-4 border-orange-500/50 shadow-2xl"
               />
               <button
                 type="button"
                 onClick={removeLogo}
-                className="absolute -top-3 -right-3 bg-red-600 hover:bg-red-700 rounded-full p-2 shadow-lg cursor-pointer transition"
+                className="absolute -top-3 -right-3 bg-red-600 hover:bg-red-700 rounded-full p-3 shadow-lg cursor-pointer transition"
               >
-                <AiOutlineClose className="text-white text-lg" />
+                <AiOutlineClose className="text-white text-xl" />
               </button>
             </div>
           )}
         </div>
 
         {/* Google Restrictions */}
-        <div className="flex items-center gap-5">
-          <label className="text-xl font-semibold">
+        <div className="flex items-center gap-6">
+          <label className="text-xl font-semibold text-orange-300">
             Does your app require any Google restrictions?
           </label>
           <Controller
@@ -229,22 +235,29 @@ const Step1Form = ({ onNext, formData = {}, setFormData }) => {
                 type="checkbox"
                 {...field}
                 checked={field.value}
-                className="w-7 h-7 accent-purple-500 rounded cursor-pointer"
+                className="w-8 h-8 accent-orange-500 rounded cursor-pointer"
               />
             )}
           />
         </div>
 
-        {/* Video Upload + Preview */}
+        {/* Video Upload (Conditional) */}
         {requiresGoogleRestrictions && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <label className="block text-xl font-semibold mb-3">
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <label className="block text-xl font-semibold text-orange-300 mb-3">
               Upload Video (Max 25MB)
             </label>
             <Controller
               name="uploadVideo"
               control={control}
-              rules={{ required: "Video is required" }}
+              rules={{
+                required: "Video is required if Google restrictions apply",
+              }}
               render={({ field: { onChange } }) => (
                 <input
                   type="file"
@@ -257,20 +270,21 @@ const Step1Form = ({ onNext, formData = {}, setFormData }) => {
                     }
                     onChange(file || null);
                   }}
-                  className="w-full px-6 py-4 bg-white/10 border border-white/20 rounded-2xl file:mr-6 file:py-3 file:px-8 file:rounded-xl file:border-0 file:bg-gradient-to-r file:from-purple-600 file:to-pink-600 file:text-white file:font-bold cursor-pointer"
+                  className="w-full px-6 py-5 bg-gray-800/70 border border-gray-700 rounded-2xl file:mr-6 file:py-4 file:px-10 file:rounded-xl file:border-0 file:bg-gradient-to-r file:from-orange-600 file:to-orange-500 file:text-white file:font-bold cursor-pointer transition"
                 />
               )}
             />
             {errors.uploadVideo && (
-              <p className="text-red-400 mt-2">{errors.uploadVideo.message}</p>
+              <p className="text-orange-400 mt-2 text-sm">
+                {errors.uploadVideo.message}
+              </p>
             )}
 
-            {/* Video Preview */}
             {uploadVideo && (
-              <div className="mt-4 relative inline-block">
+              <div className="mt-6 relative inline-block">
                 <video
                   controls
-                  className="w-80 rounded-2xl border-4 border-purple-500/50 shadow-xl"
+                  className="w-96 rounded-3xl border-4 border-orange-500/50 shadow-2xl"
                 >
                   <source src={URL.createObjectURL(uploadVideo)} />
                   Your browser does not support video playback.
@@ -278,9 +292,9 @@ const Step1Form = ({ onNext, formData = {}, setFormData }) => {
                 <button
                   type="button"
                   onClick={removeVideo}
-                  className="absolute -top-3 -right-3 bg-red-600 hover:bg-red-700 rounded-full p-2 shadow-lg cursor-pointer transition"
+                  className="absolute -top-3 -right-3 bg-red-600 hover:bg-red-700 rounded-full p-3 shadow-lg cursor-pointer transition"
                 >
-                  <AiOutlineClose className="text-white text-lg" />
+                  <AiOutlineClose className="text-white text-xl" />
                 </button>
               </div>
             )}
@@ -289,7 +303,7 @@ const Step1Form = ({ onNext, formData = {}, setFormData }) => {
 
         {/* Platform */}
         <div>
-          <label className="block text-xl font-semibold mb-3">
+          <label className="block text-xl font-semibold text-orange-300 mb-3">
             Your App Platform
           </label>
           <Controller
@@ -299,23 +313,25 @@ const Step1Form = ({ onNext, formData = {}, setFormData }) => {
             render={({ field }) => (
               <select
                 {...field}
-                className="w-full px-6 py-4 bg-white/10 border border-white/20 rounded-2xl focus:outline-none focus:border-purple-500 transition cursor-pointer"
+                className="w-full px-6 py-5 bg-gray-800/70 border border-gray-700 rounded-2xl text-white focus:border-orange-500 focus:ring-4 focus:ring-orange-500/20 outline-none transition duration-200 cursor-pointer"
               >
-                <option className="text-black" value="">Choose platform</option>
-                <option className="text-black" value="Android">Android</option>
-                <option className="text-black" value="iOS">iOS</option>
-                <option className="text-black" value="Both">Both</option>
+                <option value="">Choose platform</option>
+                <option value="Android">Android</option>
+                <option value="iOS">iOS</option>
+                <option value="Both">Both</option>
               </select>
             )}
           />
           {errors.appPlatform && (
-            <p className="text-red-400 mt-2">{errors.appPlatform.message}</p>
+            <p className="text-orange-400 mt-2 text-sm">
+              {errors.appPlatform.message}
+            </p>
           )}
         </div>
 
-        {/* APK File Upload */}
+        {/* APK File */}
         <div>
-          <label className="block text-xl font-semibold mb-3">
+          <label className="block text-xl font-semibold text-orange-300 mb-3">
             Upload APK File
           </label>
           <Controller
@@ -327,21 +343,25 @@ const Step1Form = ({ onNext, formData = {}, setFormData }) => {
                 type="file"
                 accept=".apk"
                 onChange={(e) => onChange(e.target.files?.[0] || null)}
-                className="w-full px-6 py-4 bg-white/10 border border-white/20 rounded-2xl file:mr-6 file:py-3 file:px-8 file:rounded-xl file:border-0 file:bg-gradient-to-r file:from-purple-600 file:to-pink-600 file:text-white file:font-bold cursor-pointer"
+                className="w-full px-6 py-5 bg-gray-800/70 border border-gray-700 rounded-2xl file:mr-6 file:py-4 file:px-10 file:rounded-xl file:border-0 file:bg-gradient-to-r file:from-orange-600 file:to-orange-500 file:text-white file:font-bold cursor-pointer transition"
               />
             )}
           />
           {errors.apkFile && (
-            <p className="text-red-400 mt-2">{errors.apkFile.message}</p>
+            <p className="text-orange-400 mt-2 text-sm">
+              {errors.apkFile.message}
+            </p>
           )}
           {watch("apkFile") && (
-            <p className="text-green-400 mt-2">✓ {watch("apkFile").name}</p>
+            <p className="text-green-400 mt-3 font-medium">
+              ✓ {watch("apkFile").name}
+            </p>
           )}
         </div>
 
-        {/* Screenshots Upload + Numbered Preview */}
+        {/* Screenshots */}
         <div>
-          <label className="block text-xl font-semibold mb-3">
+          <label className="block text-xl font-semibold text-orange-300 mb-3">
             Upload Screenshots (Min 4, Max 12)
           </label>
           <Controller
@@ -359,35 +379,42 @@ const Step1Form = ({ onNext, formData = {}, setFormData }) => {
                     : [];
                   onChange(files);
                 }}
-                className="w-full px-6 py-4 bg-white/10 border border-white/20 rounded-2xl file:mr-6 file:py-3 file:px-8 file:rounded-xl file:border-0 file:bg-gradient-to-r file:from-purple-600 file:to-pink-600 file:text-white file:font-bold cursor-pointer"
+                className="w-full px-6 py-5 bg-gray-800/70 border border-gray-700 rounded-2xl file:mr-6 file:py-4 file:px-10 file:rounded-xl file:border-0 file:bg-gradient-to-r file:from-orange-600 file:to-orange-500 file:text-white file:font-bold cursor-pointer transition"
               />
             )}
           />
           {errors.screenshots && (
-            <p className="text-red-400 mt-2">{errors.screenshots.message}</p>
+            <p className="text-orange-400 mt-2 text-sm">
+              {errors.screenshots.message}
+            </p>
           )}
 
-          {/* Screenshots Preview with Numbers */}
           {screenshots.length > 0 && (
-            <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-8">
               {screenshots.map((file, index) => (
-                <div key={index} className="relative group">
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="relative group"
+                >
                   <img
                     src={URL.createObjectURL(file)}
                     alt={`Screenshot ${index + 1}`}
-                    className="w-full h-48 object-cover rounded-2xl border-4 border-purple-500/30 shadow-lg"
+                    className="w-full h-64 object-cover rounded-3xl border-4 border-orange-500/40 shadow-2xl"
                   />
-                  <div className="absolute bottom-2 left-2 bg-purple-600/80 text-white px-3 py-1 rounded-lg font-bold">
+                  <div className="absolute bottom-3 left-3 bg-orange-600 text-white px-4 py-2 rounded-xl font-bold text-lg shadow-lg">
                     {index + 1}
                   </div>
                   <button
                     type="button"
                     onClick={() => removeScreenshot(index)}
-                    className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 rounded-full p-2 opacity-0 group-hover:opacity-100 transition cursor-pointer"
+                    className="absolute top-3 right-3 bg-red-600 hover:bg-red-700 rounded-full p-3 opacity-0 group-hover:opacity-100 transition cursor-pointer shadow-lg"
                   >
-                    <AiOutlineClose className="text-white" />
+                    <AiOutlineClose className="text-white text-xl" />
                   </button>
-                </div>
+                </motion.div>
               ))}
             </div>
           )}
@@ -395,7 +422,7 @@ const Step1Form = ({ onNext, formData = {}, setFormData }) => {
 
         {/* APK Version */}
         <div>
-          <label className="block text-xl font-semibold mb-3">
+          <label className="block text-xl font-semibold text-orange-300 mb-3">
             APK Version
           </label>
           <Controller
@@ -406,21 +433,23 @@ const Step1Form = ({ onNext, formData = {}, setFormData }) => {
               <input
                 {...field}
                 placeholder="e.g. 1.0.5"
-                className="w-full px-6 py-4 bg-white/10 border border-white/20 rounded-2xl focus:outline-none focus:border-purple-500 transition"
+                className="w-full px-6 py-5 bg-gray-800/70 border border-gray-700 rounded-2xl text-white placeholder-gray-500 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/20 outline-none transition duration-200"
               />
             )}
           />
           {errors.apkVersion && (
-            <p className="text-red-400 mt-2">{errors.apkVersion.message}</p>
+            <p className="text-orange-400 mt-2 text-sm">
+              {errors.apkVersion.message}
+            </p>
           )}
         </div>
 
         {/* Tags */}
         <div>
-          <label className="block text-xl font-semibold mb-3">
+          <label className="block text-xl font-semibold text-orange-300 mb-3">
             Tags (Minimum 5)
           </label>
-          <div className="flex gap-4 mb-4">
+          <div className="flex gap-4 mb-6">
             <Controller
               name="tagInput"
               control={control}
@@ -433,27 +462,29 @@ const Step1Form = ({ onNext, formData = {}, setFormData }) => {
                       addTag();
                     }
                   }}
-                  placeholder="Type tag and press Enter/Add"
-                  className="flex-1 px-6 py-4 bg-white/10 border border-white/20 rounded-2xl focus:outline-none focus:border-purple-500 transition"
+                  placeholder="Type tag and press Enter"
+                  className="flex-1 px-6 py-5 bg-gray-800/70 border border-gray-700 rounded-2xl text-white placeholder-gray-500 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/20 outline-none transition duration-200"
                 />
               )}
             />
             <button
               type="button"
               onClick={addTag}
-              className="px-10 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl font-bold shadow-lg hover:shadow-purple-600/50 transition cursor-pointer"
+              className="px-10 py-5 bg-gradient-to-r from-orange-600 to-orange-500 rounded-2xl font-bold shadow-xl hover:shadow-orange-900/60 transition cursor-pointer"
             >
-              <AiOutlinePlus className="text-2xl" />
+              <AiOutlinePlus className="text-3xl" />
             </button>
           </div>
 
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-4">
             {tags.map((tag) => (
-              <div
+              <motion.div
                 key={tag}
-                className="flex items-center gap-3 px-5 py-3 bg-purple-600/30 rounded-2xl border border-purple-500/30"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                className="flex items-center gap-3 px-6 py-4 bg-orange-900/40 rounded-2xl border border-orange-600/50 shadow-lg"
               >
-                <span className="font-medium">{tag}</span>
+                <span className="font-medium text-orange-200">{tag}</span>
                 <button
                   type="button"
                   onClick={() => removeTag(tag)}
@@ -461,30 +492,32 @@ const Step1Form = ({ onNext, formData = {}, setFormData }) => {
                 >
                   <AiOutlineDelete className="text-xl" />
                 </button>
-              </div>
+              </motion.div>
             ))}
           </div>
 
           {tags.length < 5 && (
-            <p className="text-yellow-400 mt-3 font-medium">
+            <p className="text-yellow-400 mt-4 font-medium">
               ⚠️ {5 - tags.length} more tag(s) needed
             </p>
           )}
           {tags.length >= 5 && (
-            <p className="text-green-400 mt-3 font-medium">
+            <p className="text-green-400 mt-4 font-medium">
               ✓ {tags.length} tags added
             </p>
           )}
         </div>
 
-        {/* Submit */}
-        <div className="text-center pt-10">
-          <button
+        {/* Submit Button */}
+        <div className="text-center pt-12">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             type="submit"
-            className="px-16 py-6 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl font-bold text-2xl shadow-2xl hover:shadow-purple-600/60 transition transform hover:scale-105 cursor-pointer"
+            className="px-20 py-6 bg-gradient-to-r from-orange-600 to-orange-500 text-white font-bold text-2xl rounded-2xl shadow-2xl shadow-orange-900/60 hover:shadow-orange-900/80 transition duration-300 cursor-pointer"
           >
             Next Step →
-          </button>
+          </motion.button>
         </div>
       </form>
     </motion.div>

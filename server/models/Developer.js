@@ -1,6 +1,4 @@
-// models/developer.js
 import mongoose from "mongoose";
-
 const developerSchema = new mongoose.Schema(
   {
     firstName: { type: String, required: true },
@@ -14,9 +12,13 @@ const developerSchema = new mongoose.Schema(
     website: { type: String },
     password: { type: String, required: true },
     role: { type: String, default: "developer" }, // always developer
+    status: {
+      type: String,
+      enum: ["pending", "active", "deactive", "rejected"],
+      default: "pending",
+    },
   },
   { timestamps: true }
 );
-
 const Developer = mongoose.model("Developer", developerSchema);
 export default Developer;

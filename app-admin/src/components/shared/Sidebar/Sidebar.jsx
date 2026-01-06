@@ -26,7 +26,7 @@ const Sidebar = () => {
   const menuItems = [
     { to: "/", icon: <FaHome />, text: "Dashboard" },
     { to: "/revenue", icon: <FaChartLine />, text: "Revenue" },
-    { to: "/all-user", icon: <FaUsers />, text: "All Users" },
+    { to: "/all-developer", icon: <FaUsers />, text: "All Developer" },
     { to: "/notifications", icon: <FaBell />, text: "Notifications" },
     { to: "/all-apk", icon: <IoAppsSharp />, text: "All Apps" },
     { to: "/analytics", icon: <FaChartLine />, text: "Analytics" },

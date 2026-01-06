@@ -1,5 +1,4 @@
-// src/pages/Login/Login.jsx (Full Beautiful & Functional Login Component)
-
+// src/pages/Login/Login.jsx
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
@@ -14,15 +13,15 @@ import { useAuth } from "../../hooks/useAuth";
 // Login API function
 const loginDeveloper = async (credentials) => {
   const res = await axios.post(
-    `${import.meta.env.VITE_API_URL}/api/developer/login`, // Match your backend route
+    `${import.meta.env.VITE_API_URL}/api/developer/login`,
     credentials,
     { headers: { "Content-Type": "application/json" } }
   );
-  return res.data; // Expected: { success: true, token, user }
+  return res.data;
 };
 
 const Login = () => {
-  const { login } = useAuth(); 
+  const { login } = useAuth();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -35,18 +34,46 @@ const Login = () => {
   const mutation = useMutation({
     mutationFn: loginDeveloper,
     onSuccess: (data) => {
-      // Save token & user via context (and optionally localStorage)
       login(data.user);
       toast.success("🎉 Login Successful! Welcome back!", {
         position: "top-center",
         autoClose: 3000,
       });
-      navigate("/"); // Redirect to dashboard/home
+      navigate("/");
     },
     onError: (err) => {
-      const message =
-        err.response?.data?.message || "Invalid email or password";
-      toast.error(message, { position: "top-center" });
+      // Enhanced error handling for different account status messages
+      const serverMessage = err.response?.data?.message;
+
+      let displayMessage = "Invalid email or password";
+
+      if (serverMessage) {
+        if (
+          serverMessage.includes("pending") ||
+          serverMessage.includes("approval")
+        ) {
+          displayMessage =
+            "⏳ Your account is pending admin approval. Please wait for approval.";
+        } else if (serverMessage.includes("rejected")) {
+          displayMessage =
+            "❌ Your account has been rejected. Contact support for details.";
+        } else if (
+          serverMessage.includes("deactivated") ||
+          serverMessage.includes("deactive")
+        ) {
+          displayMessage = "🔒 Your account is currently deactivated.";
+        } else if (serverMessage.includes("not active")) {
+          displayMessage =
+            "🚫 Your account is not active. Please contact support.";
+        } else {
+          displayMessage = serverMessage;
+        }
+      }
+
+      toast.error(displayMessage, {
+        position: "top-center",
+        autoClose: 6000,
+      });
     },
   });
 
@@ -54,39 +81,38 @@ const Login = () => {
     mutation.mutate({ email: data.email, password: data.password });
   };
 
-  // Placeholder for Google Login (implement with @react-oauth/google if needed)
   const handleGoogleLogin = () => {
     toast.info("Google Login coming soon!");
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
+    <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-br from-gray-900 via-black to-orange-950">
       <motion.div
-        initial={{ opacity: 0, y: 60 }}
+        initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-md p-8 md:p-12"
+        className="bg-gray-900/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-orange-800/40 w-full max-w-md p-8 md:p-12"
       >
         {/* Header */}
-        <div className="text-center mb-10">
-          <motion.h2
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent"
-          >
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="text-center mb-10"
+        >
+          <h2 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600 mb-3">
             Welcome Back
-          </motion.h2>
-          <p className="text-gray-600 mt-3 text-lg">
+          </h2>
+          <p className="text-gray-400 text-lg">
             Login to your Developer Account
           </p>
-        </div>
+        </motion.div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-7">
           {/* Email */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-300 mb-2">
               Email Address
             </label>
             <input
@@ -99,10 +125,10 @@ const Login = () => {
               })}
               type="email"
               placeholder="you@example.com"
-              className="w-full px-5 py-4 rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-200 outline-none transition"
+              className="w-full px-5 py-4 rounded-xl bg-gray-800/70 border border-gray-700 text-white placeholder-gray-500 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/20 outline-none transition duration-200"
             />
             {errors.email && (
-              <p className="text-red-500 text-sm mt-2">
+              <p className="text-orange-400 text-sm mt-2">
                 {errors.email.message}
               </p>
             )}
@@ -110,7 +136,7 @@ const Login = () => {
 
           {/* Password */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-300 mb-2">
               Password
             </label>
             <div className="relative">
@@ -124,57 +150,59 @@ const Login = () => {
                 })}
                 type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
-                className="w-full px-5 py-4 pr-14 rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-200 outline-none transition"
+                className="w-full px-5 py-4 pr-14 rounded-xl bg-gray-800/70 border border-gray-700 text-white placeholder-gray-500 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/20 outline-none transition duration-200"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 cursor-pointer top-1/2 -translate-y-1/2 text-gray-500 hover:text-indigo-600"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-orange-400 transition cursor-pointer"
               >
                 {showPassword ? <HiEyeOff size={24} /> : <HiEye size={24} />}
               </button>
             </div>
             {errors.password && (
-              <p className="text-red-500 text-sm mt-2">
+              <p className="text-orange-400 text-sm mt-2">
                 {errors.password.message}
               </p>
             )}
           </div>
 
-          {/* Submit */}
+          {/* Submit Button */}
           <motion.button
-            whileHover={{ scale: 1.02 }}
+            whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
             type="submit"
             disabled={mutation.isPending}
-            className="w-full bg-gradient-to-r cursor-pointer from-indigo-600 to-purple-600 text-white font-bold py-4 rounded-xl shadow-xl hover:shadow-2xl transition disabled:opacity-70 disabled:cursor-not-allowed"
+            className="w-full bg-gradient-to-r from-orange-600 to-orange-500 text-white font-bold py-5 rounded-xl shadow-lg shadow-orange-900/50 hover:shadow-orange-900/70 transition duration-300 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer text-lg"
           >
             {mutation.isPending ? "Logging in..." : "Login"}
           </motion.button>
         </form>
 
         {/* Divider */}
-        <div className="flex items-center my-8">
-          <div className="flex-1 border-t border-gray-300"></div>
-          <span className="px-4 text-gray-500 bg-white">OR</span>
-          <div className="flex-1 border-t border-gray-300"></div>
+        <div className="flex items-center my-10">
+          <div className="flex-1 border-t border-gray-700"></div>
+          <span className="px-6 text-gray-500 text-sm">OR</span>
+          <div className="flex-1 border-t border-gray-700"></div>
         </div>
 
         {/* Google Login */}
-        <button
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
           onClick={handleGoogleLogin}
-          className="w-full flex cursor-pointer items-center justify-center gap-4 bg-white border-2 border-gray-300 text-gray-700 font-medium py-4 rounded-xl hover:bg-gray-50 transition shadow-md"
+          className="w-full flex items-center justify-center gap-4 bg-gray-800/70 border border-gray-700 text-gray-200 font-medium py-5 rounded-xl hover:bg-gray-800 hover:border-orange-600/50 transition duration-200 cursor-pointer"
         >
-          <FcGoogle size={26} />
+          <FcGoogle size={28} />
           Continue with Google
-        </button>
+        </motion.button>
 
         {/* Register Link */}
-        <p className="text-center mt-10 text-gray-600">
+        <p className="text-center mt-10 text-gray-400 text-lg">
           Don't have an account?{" "}
           <Link
             to="/register"
-            className="text-indigo-600 font-bold hover:underline transition"
+            className="text-orange-400 font-bold hover:underline transition cursor-pointer"
           >
             Register here
           </Link>

@@ -1,11 +1,10 @@
 // src/pages/Register/Register.jsx
-
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { motion } from "framer-motion";
-import { Link, useNavigate } from "react-router"; // Fixed import
+import { Link, useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import { useAuth } from "../../hooks/useAuth";
 
@@ -20,7 +19,6 @@ const fetchCountries = async () => {
   );
   if (!res.ok) throw new Error("Failed to fetch countries");
   const data = await res.json();
-
   return data
     .map((c) => ({
       name: c.name?.common || "",
@@ -29,7 +27,7 @@ const fetchCountries = async () => {
         c.idd?.root && c.idd?.suffixes?.[0]
           ? c.idd.root + c.idd.suffixes[0]
           : "",
-      flagPng: c.flags?.png || "", // High-quality PNG flag
+      flagPng: c.flags?.png || "",
     }))
     .filter((c) => c.name && c.code && c.dialCode && c.flagPng)
     .sort((a, b) => a.name.localeCompare(b.name));
@@ -46,14 +44,13 @@ const registerDeveloper = async (formData) => {
 };
 
 const Register = () => {
-  const { login } = useAuth();
+  // Removed login from useAuth since we don't auto-login anymore
   const navigate = useNavigate();
-
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [accountType, setAccountType] = useState("individual");
   const [selectedDialCode, setSelectedDialCode] = useState("+1");
-  const [selectedCountry, setSelectedCountry] = useState(null); // Full country object
+  const [selectedCountry, setSelectedCountry] = useState(null);
 
   const {
     register: formRegister,
@@ -70,13 +67,20 @@ const Register = () => {
     staleTime: Infinity,
   });
 
-  // Registration mutation
+  // Registration mutation - UPDATED FUNCTIONALITY
   const mutation = useMutation({
     mutationFn: registerDeveloper,
     onSuccess: (data) => {
-      login(data.user);
-      toast.success("🎉 Registration Successful!");
-      navigate("/");
+      // DO NOT auto-login or navigate
+      toast.success(
+        "🎉 Registration Successful!\nYour account is pending admin approval. You will be notified via email once approved.",
+        {
+          autoClose: 9000,
+          position: "top-center",
+        }
+      );
+      // Optional: You can redirect to login page after a delay if desired
+      setTimeout(() => navigate("/login"), 1000);
     },
     onError: (err) => {
       toast.error(err.response?.data?.message || "Registration Failed");
@@ -102,7 +106,6 @@ const Register = () => {
   const handleCountryChange = (e) => {
     const selectedName = e.target.value;
     setValue("country", selectedName);
-
     const country = countries.find((c) => c.name === selectedName);
     if (country) {
       setSelectedDialCode(country.dialCode);
@@ -118,23 +121,27 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 md:p-8 bg-gradient-to-r from-indigo-50 to-purple-50">
+    <div className="min-h-screen flex items-center justify-center p-4 md:p-8 bg-gradient-to-br from-gray-900 via-black to-orange-950">
       <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl p-8 md:p-10 text-gray-800"
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="bg-gray-900/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-orange-800/40 w-full max-w-3xl p-8 md:p-12 text-gray-100"
       >
-        <motion.h2
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="text-3xl md:text-4xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 mb-2"
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="text-center mb-10"
         >
-          Developer Register
-        </motion.h2>
-        <p className="text-center text-gray-500 mb-8">
-          Create your account and join APK Store
-        </p>
+          <h2 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600 mb-3">
+            Developer Register
+          </h2>
+          <p className="text-gray-400 text-lg">
+            Create your account and join APK Store
+          </p>
+        </motion.div>
 
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -147,10 +154,10 @@ const Register = () => {
                 required: "First Name is required",
               })}
               placeholder="First Name"
-              className="w-full px-5 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+              className="w-full px-5 py-4 rounded-xl bg-gray-800/70 border border-gray-700 text-white placeholder-gray-500 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/20 outline-none transition duration-200"
             />
             {errors.firstName && (
-              <p className="text-red-500 text-sm mt-1">
+              <p className="text-orange-400 text-sm mt-1">
                 {errors.firstName.message}
               </p>
             )}
@@ -162,10 +169,10 @@ const Register = () => {
                 required: "Last Name is required",
               })}
               placeholder="Last Name"
-              className="w-full px-5 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+              className="w-full px-5 py-4 rounded-xl bg-gray-800/70 border border-gray-700 text-white placeholder-gray-500 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/20 outline-none transition duration-200"
             />
             {errors.lastName && (
-              <p className="text-red-500 text-sm mt-1">
+              <p className="text-orange-400 text-sm mt-1">
                 {errors.lastName.message}
               </p>
             )}
@@ -183,10 +190,10 @@ const Register = () => {
               })}
               type="email"
               placeholder="Email Address"
-              className="w-full px-5 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+              className="w-full px-5 py-4 rounded-xl bg-gray-800/70 border border-gray-700 text-white placeholder-gray-500 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/20 outline-none transition duration-200"
             />
             {errors.email && (
-              <p className="text-red-500 text-sm mt-1">
+              <p className="text-orange-400 text-sm mt-1">
                 {errors.email.message}
               </p>
             )}
@@ -197,10 +204,14 @@ const Register = () => {
             <select
               value={accountType}
               onChange={(e) => setAccountType(e.target.value)}
-              className="w-full px-5 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+              className="w-full px-5 py-4 rounded-xl bg-gray-800/70 border border-gray-700 text-white focus:border-orange-500 focus:ring-4 focus:ring-orange-500/20 outline-none transition duration-200 cursor-pointer"
             >
-              <option value="individual">Individual</option>
-              <option value="company">Company</option>
+              <option value="individual" className="bg-gray-800">
+                Individual
+              </option>
+              <option value="company" className="bg-gray-800">
+                Company
+              </option>
             </select>
           </div>
 
@@ -212,10 +223,10 @@ const Register = () => {
                   required: "Company Name is required",
                 })}
                 placeholder="Company Name"
-                className="w-full px-5 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+                className="w-full px-5 py-4 rounded-xl bg-gray-800/70 border border-gray-700 text-white placeholder-gray-500 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/20 outline-none transition duration-200"
               />
               {errors.companyName && (
-                <p className="text-red-500 text-sm mt-1">
+                <p className="text-orange-400 text-sm mt-1">
                   {errors.companyName.message}
                 </p>
               )}
@@ -227,41 +238,38 @@ const Register = () => {
                   required: "Your Name is required",
                 })}
                 placeholder="Your Full Name"
-                className="w-full px-5 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+                className="w-full px-5 py-4 rounded-xl bg-gray-800/70 border border-gray-700 text-white placeholder-gray-500 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/20 outline-none transition duration-200"
               />
               {errors.fullName && (
-                <p className="text-red-500 text-sm mt-1">
+                <p className="text-orange-400 text-sm mt-1">
                   {errors.fullName.message}
                 </p>
               )}
             </div>
           )}
 
-          {/* Country Selection with Flag Preview */}
+          {/* Country Selection with Flag */}
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-300 mb-3">
               Country
             </label>
             <div className="flex items-center gap-4">
-              {/* Selected Flag */}
               {selectedCountry ? (
                 <img
                   src={selectedCountry.flagPng}
                   alt={`${selectedCountry.name} flag`}
-                  className="w-12 h-9 object-cover rounded-md shadow-md border border-gray-200"
+                  className="w-14 h-10 object-cover rounded-lg shadow-lg border border-gray-600"
                 />
               ) : (
-                <div className="w-12 h-9 bg-gray-200 border-2 border-dashed border-gray-400 rounded-md" />
+                <div className="w-14 h-10 bg-gray-700/50 border-2 border-dashed border-gray-600 rounded-lg" />
               )}
-
-              {/* Country Dropdown */}
               <select
                 {...formRegister("country", {
                   required: "Please select a country",
                 })}
                 onChange={handleCountryChange}
                 disabled={countriesLoading}
-                className="flex-1 px-5 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+                className="flex-1 px-5 py-4 rounded-xl bg-gray-800/70 border border-gray-700 text-white focus:border-orange-500 focus:ring-4 focus:ring-orange-500/20 outline-none transition duration-200 cursor-pointer"
               >
                 <option value="">
                   {countriesLoading
@@ -269,14 +277,14 @@ const Register = () => {
                     : "Select your country"}
                 </option>
                 {countries.map((c) => (
-                  <option key={c.code} value={c.name}>
+                  <option key={c.code} value={c.name} className="bg-gray-800">
                     {c.name} ({c.dialCode})
                   </option>
                 ))}
               </select>
             </div>
             {errors.country && (
-              <p className="text-red-500 text-sm mt-1">
+              <p className="text-orange-400 text-sm mt-1">
                 {errors.country.message}
               </p>
             )}
@@ -284,14 +292,14 @@ const Register = () => {
 
           {/* WhatsApp Number */}
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-300 mb-3">
               WhatsApp Number
             </label>
             <div className="flex gap-3">
               <input
                 value={selectedDialCode || ""}
                 disabled
-                className="w-28 px-4 py-3 bg-gray-100 border border-gray-300 rounded-xl text-center font-semibold text-gray-700"
+                className="w-32 px-4 py-4 bg-gray-800/80 border border-gray-700 rounded-xl text-center font-bold text-orange-400"
               />
               <input
                 {...formRegister("whatsapp", {
@@ -299,11 +307,11 @@ const Register = () => {
                 })}
                 type="tel"
                 placeholder="Enter remaining digits"
-                className="flex-1 px-5 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+                className="flex-1 px-5 py-4 rounded-xl bg-gray-800/70 border border-gray-700 text-white placeholder-gray-500 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/20 outline-none transition duration-200"
               />
             </div>
             {errors.whatsapp && (
-              <p className="text-red-500 text-sm mt-1">
+              <p className="text-orange-400 text-sm mt-1">
                 {errors.whatsapp.message}
               </p>
             )}
@@ -315,7 +323,7 @@ const Register = () => {
               {...formRegister("website")}
               type="url"
               placeholder="Website (Optional)"
-              className="w-full px-5 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+              className="w-full px-5 py-4 rounded-xl bg-gray-800/70 border border-gray-700 text-white placeholder-gray-500 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/20 outline-none transition duration-200"
             />
           </div>
 
@@ -328,17 +336,17 @@ const Register = () => {
               })}
               type={showPassword ? "text" : "password"}
               placeholder="Password"
-              className="w-full px-5 py-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+              className="w-full px-5 py-4 pr-12 rounded-xl bg-gray-800/70 border border-gray-700 text-white placeholder-gray-500 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/20 outline-none transition duration-200"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute cursor-pointer right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-indigo-600"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-orange-400 transition cursor-pointer"
             >
-              {showPassword ? <HiEyeOff size={22} /> : <HiEye size={22} />}
+              {showPassword ? <HiEyeOff size={24} /> : <HiEye size={24} />}
             </button>
             {errors.password && (
-              <p className="text-red-500 text-sm mt-1">
+              <p className="text-orange-400 text-sm mt-1">
                 {errors.password.message}
               </p>
             )}
@@ -354,21 +362,21 @@ const Register = () => {
               })}
               type={showConfirmPassword ? "text" : "password"}
               placeholder="Confirm Password"
-              className="w-full px-5 py-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+              className="w-full px-5 py-4 pr-12 rounded-xl bg-gray-800/70 border border-gray-700 text-white placeholder-gray-500 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/20 outline-none transition duration-200"
             />
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-4 cursor-pointer top-1/2 -translate-y-1/2 text-gray-500 hover:text-indigo-600"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-orange-400 transition cursor-pointer"
             >
               {showConfirmPassword ? (
-                <HiEyeOff size={22} />
+                <HiEyeOff size={24} />
               ) : (
-                <HiEye size={22} />
+                <HiEye size={24} />
               )}
             </button>
             {errors.confirmPassword && (
-              <p className="text-red-500 text-sm mt-1">
+              <p className="text-orange-400 text-sm mt-1">
                 {errors.confirmPassword.message}
               </p>
             )}
@@ -382,14 +390,21 @@ const Register = () => {
                 {...formRegister("terms", {
                   required: "You must agree to the terms",
                 })}
-                className="w-5 h-5 cursor-pointer text-indigo-600 rounded focus:ring-indigo-500"
+                className="w-6 h-6 rounded border-gray-600 text-orange-500 focus:ring-orange-500 focus:ring-offset-gray-900 cursor-pointer"
               />
-              <span className="text-gray-700">
-                I agree to Terms of Service & Privacy Policy
+              <span className="text-gray-300">
+                I agree to{" "}
+                <span className="text-orange-400 underline hover:text-orange-300 transition">
+                  Terms of Service
+                </span>{" "}
+                &{" "}
+                <span className="text-orange-400 underline hover:text-orange-300 transition">
+                  Privacy Policy
+                </span>
               </span>
             </label>
             {errors.terms && (
-              <p className="text-red-500 text-sm mt-1">
+              <p className="text-orange-400 text-sm mt-2">
                 {errors.terms.message}
               </p>
             )}
@@ -397,38 +412,40 @@ const Register = () => {
 
           {/* Submit Button */}
           <motion.button
-            whileHover={{ scale: 1.02 }}
+            whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
             type="submit"
-            disabled={mutation.isLoading || countriesLoading}
-            className="md:col-span-2 cursor-pointer w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition disabled:opacity-70 disabled:cursor-not-allowed"
+            disabled={mutation.isPending || countriesLoading}
+            className="md:col-span-2 w-full bg-gradient-to-r from-orange-600 to-orange-500 text-white font-bold py-5 rounded-xl shadow-lg shadow-orange-900/50 hover:shadow-orange-900/70 transition duration-300 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer text-lg"
           >
-            {mutation.isLoading ? "Creating Account..." : "Register Now"}
+            {mutation.isPending ? "Creating Account..." : "Register Now"}
           </motion.button>
         </form>
 
         {/* Divider */}
-        <div className="flex items-center my-8">
-          <div className="flex-1 border-t border-gray-300"></div>
-          <span className="px-4 text-gray-500 text-sm">OR</span>
-          <div className="flex-1 border-t border-gray-300"></div>
+        <div className="flex items-center my-10">
+          <div className="flex-1 border-t border-gray-700"></div>
+          <span className="px-6 text-gray-500 text-sm">OR</span>
+          <div className="flex-1 border-t border-gray-700"></div>
         </div>
 
         {/* Google Sign In */}
-        <button
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
           onClick={handleGoogleLogin}
-          className="w-full cursor-pointer flex items-center justify-center gap-3 bg-white border-2 border-gray-300 text-gray-700 font-medium py-3 rounded-xl hover:bg-gray-50 transition"
+          className="w-full flex items-center justify-center gap-4 bg-gray-800/70 border border-gray-700 text-gray-200 font-medium py-5 rounded-xl hover:bg-gray-800 hover:border-orange-600/50 transition duration-200 cursor-pointer"
         >
-          <FcGoogle size={24} />
+          <FcGoogle size={28} />
           Continue with Google
-        </button>
+        </motion.button>
 
         {/* Login Link */}
-        <p className="text-center mt-8 text-gray-600">
+        <p className="text-center mt-10 text-gray-400 text-lg">
           Already have an account?{" "}
           <Link
             to="/login"
-            className="text-indigo-600 font-bold hover:underline"
+            className="text-orange-400 font-bold hover:underline transition cursor-pointer"
           >
             Login here
           </Link>
