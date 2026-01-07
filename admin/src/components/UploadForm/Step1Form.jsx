@@ -1,12 +1,19 @@
 // src/components/UploadForm/Step1Form.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { motion } from "framer-motion";
 import { AiOutlinePlus, AiOutlineDelete, AiOutlineClose } from "react-icons/ai";
 import { useAuth } from "../../hooks/useAuth";
+import axios from "axios";
+
+const API_BASE = `${import.meta.env.VITE_API_URL}/api/categories`;
 
 const Step1Form = ({ onNext, formData = {}, setFormData }) => {
   const [tags, setTags] = useState(formData.tags || []);
+  const [categories, setCategories] = useState([]); // Dynamic categories
+  const [loadingCategories, setLoadingCategories] = useState(true);
+  const [categoryError, setCategoryError] = useState(false);
+
   const { user } = useAuth();
 
   const {
@@ -38,6 +45,25 @@ const Step1Form = ({ onNext, formData = {}, setFormData }) => {
   const uploadVideo = watch("uploadVideo");
   const screenshots = watch("screenshots") || [];
 
+  // Fetch categories on mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setLoadingCategories(true);
+        const response = await axios.get(API_BASE);
+        setCategories(response.data);
+        setCategoryError(false);
+      } catch (err) {
+        console.error("Failed to fetch categories:", err);
+        setCategoryError(true);
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
   const addTag = () => {
     const tagInput = getValues("tagInput");
     const trimmed = tagInput?.trim();
@@ -53,6 +79,7 @@ const Step1Form = ({ onNext, formData = {}, setFormData }) => {
 
   const removeLogo = () => setValue("apkLogo", null);
   const removeVideo = () => setValue("uploadVideo", null);
+
   const removeScreenshot = (index) => {
     const updated = screenshots.filter((_, i) => i !== index);
     setValue("screenshots", updated);
@@ -67,7 +94,6 @@ const Step1Form = ({ onNext, formData = {}, setFormData }) => {
       alert("You must upload between 4 and 12 screenshots!");
       return;
     }
-
     const validated = await trigger();
     if (!validated) return;
 
@@ -115,7 +141,7 @@ const Step1Form = ({ onNext, formData = {}, setFormData }) => {
           )}
         </div>
 
-        {/* App Category */}
+        {/* App Category - Now Dynamic */}
         <div>
           <label className="block text-xl font-semibold text-orange-300 mb-3">
             App Category
@@ -127,22 +153,19 @@ const Step1Form = ({ onNext, formData = {}, setFormData }) => {
             render={({ field }) => (
               <select
                 {...field}
-                className="w-full px-6 py-5 bg-gray-800/70 border border-gray-700 rounded-2xl text-white focus:border-orange-500 focus:ring-4 focus:ring-orange-500/20 outline-none transition duration-200 cursor-pointer"
+                disabled={loadingCategories || categoryError}
+                className="w-full px-6 py-5 bg-gray-800/70 border border-gray-700 rounded-2xl text-white focus:border-orange-500 focus:ring-4 focus:ring-orange-500/20 outline-none transition duration-200 cursor-pointer disabled:opacity-60"
               >
-                <option value="">Select a category</option>
-                {[
-                  "Games",
-                  "Tools",
-                  "Social Media",
-                  "Productivity",
-                  "Entertainment",
-                  "Education",
-                  "Health & Fitness",
-                  "Photography",
-                  "Music",
-                ].map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
+                <option value="">
+                  {loadingCategories
+                    ? "Loading categories..."
+                    : categoryError
+                    ? "Failed to load categories"
+                    : "Select a category"}
+                </option>
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat.name}>
+                    {cat.name}
                   </option>
                 ))}
               </select>
@@ -151,6 +174,11 @@ const Step1Form = ({ onNext, formData = {}, setFormData }) => {
           {errors.appCategory && (
             <p className="text-orange-400 mt-2 text-sm">
               {errors.appCategory.message}
+            </p>
+          )}
+          {categoryError && (
+            <p className="text-red-400 mt-2 text-sm">
+              Could not load categories. Please try again later.
             </p>
           )}
         </div>
@@ -203,7 +231,6 @@ const Step1Form = ({ onNext, formData = {}, setFormData }) => {
               {errors.apkLogo.message}
             </p>
           )}
-
           {apkLogo && (
             <div className="mt-6 relative inline-block">
               <img
@@ -279,7 +306,6 @@ const Step1Form = ({ onNext, formData = {}, setFormData }) => {
                 {errors.uploadVideo.message}
               </p>
             )}
-
             {uploadVideo && (
               <div className="mt-6 relative inline-block">
                 <video
@@ -388,7 +414,6 @@ const Step1Form = ({ onNext, formData = {}, setFormData }) => {
               {errors.screenshots.message}
             </p>
           )}
-
           {screenshots.length > 0 && (
             <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-8">
               {screenshots.map((file, index) => (
@@ -475,7 +500,6 @@ const Step1Form = ({ onNext, formData = {}, setFormData }) => {
               <AiOutlinePlus className="text-3xl" />
             </button>
           </div>
-
           <div className="flex flex-wrap gap-4">
             {tags.map((tag) => (
               <motion.div
@@ -495,7 +519,6 @@ const Step1Form = ({ onNext, formData = {}, setFormData }) => {
               </motion.div>
             ))}
           </div>
-
           {tags.length < 5 && (
             <p className="text-yellow-400 mt-4 font-medium">
               ⚠️ {5 - tags.length} more tag(s) needed

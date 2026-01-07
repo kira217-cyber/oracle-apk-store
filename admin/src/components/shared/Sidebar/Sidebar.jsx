@@ -19,6 +19,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 import { useAuth } from "../../../hooks/useAuth";
 import { IoIosApps } from "react-icons/io";
+import { TbCategoryFilled } from "react-icons/tb";
 import axios from "axios";
 
 const Sidebar = () => {
@@ -42,7 +43,7 @@ const Sidebar = () => {
     { to: "/", icon: <FaHome />, text: "Dashboard" },
     { to: "/profile", icon: <FaUser />, text: "Profile" },
     { to: "/upload-apk", icon: <IoIosApps />, text: "Publish APK" },
-    { to: "/all-apk", icon: <FaDownload />, text: "All Apps" },
+    { to: "/my-apps", icon: <TbCategoryFilled />, text: "My Apps" },
     { to: "/refer-link", icon: <FaLink />, text: "Refer & Earn" },
     { to: "/withdraw", icon: <FaWallet />, text: "Withdraw" },
     { to: "/boost-app", icon: <FaRocket />, text: "Boost App" },
@@ -187,13 +188,13 @@ const Sidebar = () => {
               className="flex items-center cursor-pointer gap-3 bg-gradient-to-r from-orange-600 to-orange-500 px-7 py-4 rounded-2xl font-bold shadow-xl shadow-orange-900/50 hover:shadow-orange-900/70 transition"
             >
               <FaUpload className="text-lg" />
-              Upload APK
+              Upload Apk / Ipa
             </motion.button>
           </div>
         </motion.div>
 
         {/* Page Content Outlet */}
-        <div className="bg-gray-900/70 backdrop-blur-xl rounded-3xl p-2 md:p-10 shadow-2xl border border-orange-800/30 min-h-[80vh]">
+        <div className="bg-gray-900/70 backdrop-blur-xl rounded-3xl mt-10 md:mt-0 p-2 md:p-10 shadow-2xl border border-orange-800/30 min-h-[80vh]">
           <Outlet />
         </div>
       </div>

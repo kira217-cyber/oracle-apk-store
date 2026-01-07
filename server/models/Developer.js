@@ -15,7 +15,7 @@ const developerSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ["pending", "active", "deactive", "rejected"],
-      default: "pending",
+      default: "active",
     },
   },
   { timestamps: true }

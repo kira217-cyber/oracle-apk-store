@@ -13,6 +13,7 @@ import {
   FaUpload,
   FaTimes,
 } from "react-icons/fa";
+import { BiCategoryAlt } from "react-icons/bi";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { IoAppsSharp } from "react-icons/io5";
 import { motion } from "framer-motion";
@@ -27,6 +28,7 @@ const Sidebar = () => {
     { to: "/", icon: <FaHome />, text: "Dashboard" },
     { to: "/revenue", icon: <FaChartLine />, text: "Revenue" },
     { to: "/all-developer", icon: <FaUsers />, text: "All Developer" },
+    { to: "/add-category", icon: <BiCategoryAlt />, text: "Add Category" },
     { to: "/notifications", icon: <FaBell />, text: "Notifications" },
     { to: "/all-apk", icon: <IoAppsSharp />, text: "All Apps" },
     { to: "/analytics", icon: <FaChartLine />, text: "Analytics" },
@@ -35,8 +37,8 @@ const Sidebar = () => {
   ];
 
   const handleLogout = () => {
-   logout()
-   toast.success("Logout successfully!");
+    logout();
+    toast.success("Logout successfully!");
   };
 
   return (

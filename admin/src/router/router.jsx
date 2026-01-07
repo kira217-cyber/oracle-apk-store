@@ -1,7 +1,6 @@
 import { createBrowserRouter } from "react-router";
 import RootLayout from "../RootLayout/RootLayout";
 import Home from "../pages/Home/Home";
-import AllApk from "../pages/AllApk/AllApk";
 import Withdraw from "../pages/Wihtdraw/Withdraw";
 import Profile from "../pages/Profile/Profile";
 import TopUp from "../pages/TopUp/TopUp";
@@ -12,6 +11,7 @@ import Register from "../pages/Register/Register";
 import Login from "../pages/Login/Login";
 import PrivateRoute from "../PrivateRoute/PrivateRoute";
 import UploadApk from "../pages/UploadApk/UploadApk";
+import MyApp from "../pages/MyApp/MyApp";
 
 export const routes = createBrowserRouter([
   {
@@ -29,10 +29,10 @@ export const routes = createBrowserRouter([
         ),
       },
       {
-        path: "all-apk",
+        path: "my-apps",
         element: (
           <PrivateRoute>
-            <AllApk></AllApk>{" "}
+            <MyApp></MyApp>{" "}
           </PrivateRoute>
         ),
       },

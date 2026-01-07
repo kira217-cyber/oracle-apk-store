@@ -5,6 +5,8 @@ import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import UploadApk from "../models/UploadApk.js";
+import Developer from "../models/Developer.js";
+import { sendEmail } from "../config/email.js";
 
 const router = express.Router();
 
@@ -215,6 +217,106 @@ router.get("/all-apks", async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+});
+
+// GET: Admin - All APKs with search and filter
+router.get("/admin/apks", async (req, res) => {
+  try {
+    const { search = "", status = "pending" } = req.query;
+
+    let query = {};
+
+    if (status && status !== "all") {
+      query.status = status;
+    }
+
+    if (search.trim()) {
+      const developers = await Developer.find({
+        $or: [
+          { email: { $regex: search, $options: "i" } },
+          { fullName: { $regex: search, $options: "i" } },
+          { companyName: { $regex: search, $options: "i" } },
+        ],
+      }).select("_id");
+
+      const developerIds = developers.map((d) => d._id);
+
+      query.$or = [
+        { apkTitle: { $regex: search, $options: "i" } },
+        { user: { $in: developerIds } },
+      ];
+    }
+
+    const apks = await UploadApk.find(query)
+      .populate({
+        path: "user",
+        select: "fullName email companyName country whatsapp status createdAt",
+      })
+      .sort({ createdAt: -1 });
+
+    res.json(apks);
+  } catch (error) {
+    console.error("Error fetching APKs:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// POST: Admin - Update status (with message and email)
+router.post("/admin/update-status/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, message } = req.body; // status: 'active'|'deactive'|'rejected'|'approved'
+
+    if (!["active", "deactive", "rejected", "approved"].includes(status)) {
+      return res.status(400).json({ error: "Invalid status" });
+    }
+
+    const apk = await UploadApk.findById(id).populate("user", "email name");
+    if (!apk) {
+      return res.status(404).json({ error: "APK not found" });
+    }
+
+    const oldStatus = apk.status;
+    apk.status = status === "approved" ? "active" : status; // approved → active
+    apk.adminMessage = message || "";
+
+    await apk.save();
+
+    // Send email to developer
+    if (apk.user && apk.user.email) {
+      let subject = "";
+      let text = `Hello ${apk.user.name || "Developer"},\n\nYour app "${apk.apkTitle}" status has been updated.\nNew Status: ${apk.status.toUpperCase()}\n`;
+
+      if (message) {
+        text += `\nAdmin Message: ${message}\n`;
+      }
+
+      if (status === "active" || status === "approved") {
+        subject = "Your App Has Been Approved & Activated!";
+      } else if (status === "deactive") {
+        subject = "Your App Has Been Deactivated";
+      } else if (status === "rejected") {
+        subject = "Your App Submission Has Been Rejected";
+      }
+
+      await sendEmail(apk.user.email, subject, text);
+    }
+
+    res.json({ message: "Status updated and email sent", apk });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// GET: My uploaded APKs
+router.get("/my-apks", async (req, res) => {
+  const userId = req.query.user;
+  if (!userId) return res.status(401).json({ error: "User ID required" });
+
+  const apks = await UploadApk.find({ user: userId })
+    .sort({ createdAt: -1 });
+  res.json(apks);
 });
 
 export default router;
