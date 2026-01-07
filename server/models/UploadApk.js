@@ -1,6 +1,4 @@
-// backend/models/UploadApk.js
-import mongoose from 'mongoose';
-
+import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const uploadApkSchema = new Schema(
@@ -35,7 +33,7 @@ const uploadApkSchema = new Schema(
     appPlatform: {
       type: String,
       required: true,
-      enum: ['Android', 'iOS', 'Both'],
+      enum: ["Android", "iOS", "Both"],
     },
     apkFile: {
       type: String,
@@ -48,7 +46,7 @@ const uploadApkSchema = new Schema(
         validator: function (val) {
           return val.length >= 4 && val.length <= 12;
         },
-        message: 'Screenshots must be between 4 and 12',
+        message: "Screenshots must be between 4 and 12",
       },
     },
     apkVersion: {
@@ -63,7 +61,7 @@ const uploadApkSchema = new Schema(
         validator: function (val) {
           return val.length >= 5;
         },
-        message: 'Minimum 5 tags required',
+        message: "Minimum 5 tags required",
       },
     },
     fullAbout: {
@@ -72,37 +70,37 @@ const uploadApkSchema = new Schema(
     },
     collectsUserData: {
       type: String,
-      enum: ['Yes', 'No'],
+      enum: ["Yes", "No"],
       required: true,
     },
     bettingOrGambling: {
       type: String,
-      enum: ['Yes', 'No'],
+      enum: ["Yes", "No"],
       required: true,
     },
     earningOrAds: {
       type: String,
-      enum: ['Yes', 'No'],
+      enum: ["Yes", "No"],
       required: true,
     },
     mobileBanking: {
       type: String,
-      enum: ['Yes', 'No'],
+      enum: ["Yes", "No"],
       required: true,
     },
     government: {
       type: String,
-      enum: ['Yes', 'No'],
+      enum: ["Yes", "No"],
       required: true,
     },
     sharesDataWithThirdParties: {
       type: String,
-      enum: ['Yes', 'No'],
+      enum: ["Yes", "No"],
       required: true,
     },
     intendedForChildren: {
       type: String,
-      enum: ['Yes', 'No', 'Both'],
+      enum: ["Yes", "No", "Both"],
       required: true,
     },
     childDataTypes: {
@@ -139,11 +137,11 @@ const uploadApkSchema = new Schema(
     },
     permissionReason: {
       type: String,
-      default: '',
+      default: "",
     },
     showsAds: {
       type: String,
-      enum: ['Yes', 'No'],
+      enum: ["Yes", "No"],
       required: true,
     },
     adDetails: {
@@ -162,24 +160,32 @@ const uploadApkSchema = new Schema(
         validator: function (val) {
           return val.length === 4;
         },
-        message: 'All 4 declarations must be checked',
+        message: "All 4 declarations must be checked",
       },
     },
-
-    // Reference to the authenticated user who uploaded this APK
     user: {
       type: Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "Developer",
       required: true,
+    },
+    // New fields for admin approval
+    status: {
+      type: String,
+      enum: ["pending", "approved", "active", "deactive", "rejected"],
+      default: "pending",
+    },
+    adminMessage: {
+      type: String,
+      default: "",
     },
   },
   { timestamps: true }
 );
 
-// Index for faster queries by user
+// Indexes
 uploadApkSchema.index({ user: 1 });
+uploadApkSchema.index({ status: 1 });
+uploadApkSchema.index({ apkTitle: "text", "user.email": "text" }); // For search support if needed
 
-// Create and export the model
-const UploadApk = mongoose.model('UploadApk', uploadApkSchema);
-
+const UploadApk = mongoose.model("UploadApk", uploadApkSchema);
 export default UploadApk;

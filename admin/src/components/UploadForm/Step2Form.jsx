@@ -83,29 +83,46 @@ const Step2Form = ({ formData, onBack }) => {
       );
     },
     onMutate: () => {
-      toast.info("Uploading your APK...", {
-        toastId: "upload-loading",
+      toast.info("Submitting your APK for review...", {
+        toastId: "upload-pending",
         autoClose: false,
         closeOnClick: false,
         draggable: false,
       });
     },
     onSuccess: () => {
-      toast.dismiss("upload-loading");
-      toast.success("APK Published Successfully!", {
-        icon: "🚀",
-        autoClose: 3000,
-      });
-      setTimeout(() => navigate("/"), 1500);
+      toast.dismiss("upload-pending");
+
+      // Success toast with pending status message
+      toast.success(
+        <>
+          <strong>APK Submitted Successfully! 🚀</strong>
+          <br />
+          <span className="text-sm">
+            Your app is now under review. Current status:{" "}
+            <strong className="text-orange-300">Pending</strong>
+          </span>
+        </>,
+        {
+          icon: "⏳",
+          autoClose: 6000,
+          style: { maxWidth: "500px" },
+        }
+      );
+
+      // Navigate to My Apps page after a short delay
+      setTimeout(() => {
+        navigate("/my-apps"); // Change this if your route is different (e.g., "/my-apks")
+      }, 1000);
     },
     onError: (err) => {
-      toast.dismiss("upload-loading");
+      toast.dismiss("upload-pending");
       const errorMessage =
         err.response?.data?.error ||
         err.response?.data?.message ||
         err.message ||
         "Upload failed. Please try again.";
-      toast.error(`Upload Failed: ${errorMessage}`, { autoClose: 5000 });
+      toast.error(`Upload Failed: ${errorMessage}`, { autoClose: 6000 });
     },
   });
 
@@ -141,10 +158,7 @@ const Step2Form = ({ formData, onBack }) => {
         label: "Is any user data shared with third parties?",
       },
     ],
-    [
-      { name: "showsAds", label: "Does your app show ads?" },
-      null, // Empty slot to balance layout
-    ],
+    [{ name: "showsAds", label: "Does your app show ads?" }, null],
   ];
 
   return (
@@ -235,7 +249,7 @@ const Step2Form = ({ formData, onBack }) => {
                     )}
                   </div>
                 ) : (
-                  <div key="empty" /> // Empty column for balance
+                  <div key="empty" />
                 )
               )}
             </div>
@@ -810,16 +824,16 @@ const Step2Form = ({ formData, onBack }) => {
           >
             {mutation.isPending ? (
               <>
-                <span className="opacity-0">Publish APK</span>
+                <span className="opacity-0">Submit for Review</span>
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="w-10 h-10 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
                 </div>
-                <span className="absolute inset-0 flex items-center justify-center">
-                  Publishing...
+                <span className="absolute inset-0 flex items-center justify-center text-lg">
+                  Submitting for Review...
                 </span>
               </>
             ) : (
-              "🚀 Publish APK"
+              "Submit for Review"
             )}
           </motion.button>
         </div>

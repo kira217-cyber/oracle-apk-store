@@ -11,6 +11,7 @@ import Wallets from "../pages/Wallets/Wallets";
 import Likes from "../pages/Likes/Likes";
 import Analytics from "../pages/Analytics/Analytics";
 import AllDeveloper from "../pages/AllDeveloper/AllDeveloper";
+import AddCategory from "../pages/AddCategory/AddCategory";
 
 export const routes = createBrowserRouter([
   {
@@ -41,6 +42,14 @@ export const routes = createBrowserRouter([
         element: (
           <PrivateRoute>
             <AllDeveloper></AllDeveloper>{" "}
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "add-category",
+        element: (
+          <PrivateRoute>
+            <AddCategory></AddCategory>{" "}
           </PrivateRoute>
         ),
       },

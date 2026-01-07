@@ -1,6 +1,6 @@
 // src/pages/UploadApk/UploadApk.jsx
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion"; // ← Add AnimatePresence here!
+import { motion, AnimatePresence } from "framer-motion";
 import Step1Form from "../../components/UploadForm/Step1Form";
 import Step2Form from "../../components/UploadForm/Step2Form";
 
