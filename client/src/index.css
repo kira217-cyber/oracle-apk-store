@@ -12,12 +12,9 @@
   background: linear-gradient(
     270deg,
     rgb(255, 0, 0),
-    rgb(255, 140, 0),
-    rgb(255, 255, 0),
-    rgb(0, 255, 128),
-    rgb(0, 128, 255),
+
     rgb(128, 0, 255),
-    rgb(255, 0, 0)
+    rgb(150, 1, 1)
   );
 
   background-size: 500% 500%;

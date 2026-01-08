@@ -12,6 +12,7 @@ import Likes from "../pages/Likes/Likes";
 import Analytics from "../pages/Analytics/Analytics";
 import AllDeveloper from "../pages/AllDeveloper/AllDeveloper";
 import AddCategory from "../pages/AddCategory/AddCategory";
+import BannerPromotion from "../pages/BannerPromotion/BannerPromotion";
 
 export const routes = createBrowserRouter([
   {
@@ -90,6 +91,14 @@ export const routes = createBrowserRouter([
         element: (
           <PrivateRoute>
             <Wallets></Wallets>{" "}
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "promotions/banner",
+        element: (
+          <PrivateRoute>
+            <BannerPromotion></BannerPromotion>{" "}
           </PrivateRoute>
         ),
       },

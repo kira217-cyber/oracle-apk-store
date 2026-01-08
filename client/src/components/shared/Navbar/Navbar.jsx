@@ -91,7 +91,7 @@ const Navbar = () => {
                 ANDROID APP
               </NavLink>
               <NavLink
-                to="/app-details"
+                to="/iso"
                 className={({ isActive }) =>
                   `font-semibold text-md transition ${
                     isActive

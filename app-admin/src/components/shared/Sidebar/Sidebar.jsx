@@ -12,16 +12,20 @@ import {
   FaUserCircle,
   FaUpload,
   FaTimes,
+  FaChevronDown,
+  FaChevronUp,
 } from "react-icons/fa";
 import { BiCategoryAlt } from "react-icons/bi";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { IoAppsSharp } from "react-icons/io5";
+import { GrAnnounce } from "react-icons/gr";
 import { motion } from "framer-motion";
 import { useAuth } from "../../../hooks/useAuth";
 import { toast } from "react-toastify";
 
 const Sidebar = () => {
   const [open, setOpen] = useState(false);
+  const [promotionsOpen, setPromotionsOpen] = useState(false); // Dropdown state
   const { logout } = useAuth();
 
   const menuItems = [
@@ -29,11 +33,17 @@ const Sidebar = () => {
     { to: "/revenue", icon: <FaChartLine />, text: "Revenue" },
     { to: "/all-developer", icon: <FaUsers />, text: "All Developer" },
     { to: "/add-category", icon: <BiCategoryAlt />, text: "Add Category" },
+    // Promotions will be handled separately with dropdown
     { to: "/notifications", icon: <FaBell />, text: "Notifications" },
     { to: "/all-apk", icon: <IoAppsSharp />, text: "All Apps" },
     { to: "/analytics", icon: <FaChartLine />, text: "Analytics" },
     { to: "/likes", icon: <FaHeart />, text: "Likes" },
     { to: "/wallets", icon: <FaWallet />, text: "Wallets" },
+  ];
+
+  const promotionSubItems = [
+    { to: "/promotions/banner", text: "Banner Promotion" },
+    { to: "/promotions/popular", text: "Popular Promotion" },
   ];
 
   const handleLogout = () => {
@@ -48,7 +58,6 @@ const Sidebar = () => {
         <button onClick={() => setOpen(true)} className="cursor-pointer">
           <RxHamburgerMenu className="text-2xl" />
         </button>
-        {/* <p className="font-bold text-lg tracking-wide">ADMIN</p> */}
         <div className="flex items-center gap-4">
           <FaBell className="text-xl cursor-pointer hover:text-blue-400 transition" />
           <FaUserCircle className="text-2xl cursor-pointer hover:text-blue-400 transition" />
@@ -65,12 +74,15 @@ const Sidebar = () => {
 
       {/* ========= SIDEBAR ========= */}
       <div
-        className={`fixed top-0 left-0 h-screen w-72 bg-black/95 backdrop-blur-2xl shadow-2xl z-50 overflow-y-auto transition-transform duration-300 border-r border-blue-950/50
+        className={`fixed top-0 left-0 h-screen w-72  bg-black/95 backdrop-blur-2xl shadow-2xl z-50 overflow-y-auto transition-transform duration-300 border-r border-blue-950/50
           ${open ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
         `}
       >
         <SidebarContent
           menuItems={menuItems}
+          promotionSubItems={promotionSubItems}
+          promotionsOpen={promotionsOpen}
+          setPromotionsOpen={setPromotionsOpen}
           onClose={() => setOpen(false)}
           onLogout={handleLogout}
         />
@@ -122,7 +134,14 @@ const Sidebar = () => {
 };
 
 // Reusable Sidebar Content Component
-const SidebarContent = ({ menuItems, onClose, onLogout }) => {
+const SidebarContent = ({
+  menuItems,
+  promotionSubItems,
+  promotionsOpen,
+  setPromotionsOpen,
+  onClose,
+  onLogout,
+}) => {
   return (
     <div className="h-full flex flex-col">
       {/* Profile Header */}
@@ -150,7 +169,7 @@ const SidebarContent = ({ menuItems, onClose, onLogout }) => {
       )}
 
       {/* Navigation Links */}
-      <nav className="flex-1 px-6 py-8 space-y-3 overflow-y-auto">
+      <nav className="flex-1 px-6 py-8 space-y-3 overflow-y-auto [scrollbar-width:none]">
         {menuItems.map((item) => (
           <NavLink
             key={item.to}
@@ -172,6 +191,45 @@ const SidebarContent = ({ menuItems, onClose, onLogout }) => {
             <span>{item.text}</span>
           </NavLink>
         ))}
+
+        {/* Promotions with Dropdown */}
+        <div className="space-y-2">
+          <button
+            onClick={() => setPromotionsOpen(!promotionsOpen)}
+            className="w-full flex items-center justify-between px-6 py-4 rounded-2xl text-base font-medium transition-all duration-300 group cursor-pointer text-gray-400 hover:bg-white/5 hover:text-white hover:shadow-lg backdrop-blur-sm"
+          >
+            <div className="flex items-center gap-5">
+              <span className="text-xl group-hover:scale-110 transition-transform">
+                <GrAnnounce />
+
+              </span>
+              <span>Promotions</span>
+            </div>
+            {promotionsOpen ? <FaChevronUp /> : <FaChevronDown />}
+          </button>
+
+          {promotionsOpen && (
+            <div className="pl-12 space-y-2">
+              {promotionSubItems.map((sub) => (
+                <NavLink
+                  key={sub.to}
+                  to={sub.to}
+                  onClick={onClose}
+                  className={({ isActive }) =>
+                    `block px-6 py-3 rounded-xl text-sm font-medium transition-all duration-300
+                    ${
+                      isActive
+                        ? "bg-gradient-to-r from-[#1d4ed8] to-[#3b82f6] text-white shadow-lg"
+                        : "text-gray-500 hover:text-white hover:bg-white/5"
+                    }`
+                  }
+                >
+                  {sub.text}
+                </NavLink>
+              ))}
+            </div>
+          )}
+        </div>
       </nav>
 
       {/* Logout - Bottom */}
@@ -187,25 +245,5 @@ const SidebarContent = ({ menuItems, onClose, onLogout }) => {
     </div>
   );
 };
-
-const MenuLink = ({ to, icon, text }) => (
-  <NavLink
-    to={to}
-    end
-    className={({ isActive }) =>
-      `flex items-center gap-5 px-6 py-4 rounded-2xl text-base font-medium transition-all duration-300 group cursor-pointer
-      ${
-        isActive
-          ? "bg-gradient-to-r from-[#1d4ed8] to-[#3b82f6] text-white shadow-xl shadow-blue-800/50 scale-105"
-          : "text-gray-400 hover:bg-white/5 hover:text-white hover:shadow-lg backdrop-blur-sm"
-      }`
-    }
-  >
-    <span className="text-xl group-hover:scale-110 transition-transform">
-      {icon}
-    </span>
-    <span>{text}</span>
-  </NavLink>
-);
 
 export default Sidebar;
