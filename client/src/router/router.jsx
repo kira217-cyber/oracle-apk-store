@@ -39,13 +39,8 @@ export const routes = createBrowserRouter([
       { path: "profile", element: <Profile /> },
       { path: "my-apps", element: <MyApps /> },
       {
-        path: "app-details",
-        element: (
-          <PrivateRoute>
-            {" "}
-            <AppDetails />{" "}
-          </PrivateRoute>
-        ),
+        path: "app-details/:id",
+        element: <AppDetails />,
       },
     ],
   },

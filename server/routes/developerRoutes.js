@@ -240,7 +240,7 @@ router.post("/register", async (req, res) => {
       website: website?.trim() || "",
       password: hashedPassword,
       role: "developer",
-      status: "pending",
+      status: "active",
     });
 
     res.json({

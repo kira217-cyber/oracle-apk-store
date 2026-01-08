@@ -49,6 +49,10 @@ const uploadApkSchema = new Schema(
         message: "Screenshots must be between 4 and 12",
       },
     },
+    websiteUrl: {
+      type: String,
+      trim: true,
+    },
     apkVersion: {
       type: String,
       required: true,
