@@ -7,6 +7,7 @@ import developerRoutes from "./routes/developerRoutes.js";
 import uploadApkRoutes from "./routes/uploadApkRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import categoriesRouter from './routes/categoriesRoutes.js';
+import bannerRoutes from './routes/bannerRoutes.js';
 
 
 dotenv.config();
@@ -24,6 +25,7 @@ app.use("/api/developer", developerRoutes);
 app.use("/api", uploadApkRoutes);
 app.use("/api/admin", adminRoutes);
 app.use('/api/categories', categoriesRouter);
+app.use('/api/banners', bannerRoutes);
 
 
 app.get("/", (req, res) => {

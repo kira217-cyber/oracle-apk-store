@@ -26,12 +26,7 @@ export const routes = createBrowserRouter([
       { path: "android", element: <AndroidApp /> },
       {
         path: "iso",
-        element: (
-          <PrivateRoute>
-            {" "}
-            <IsoApp />
-          </PrivateRoute>
-        ),
+        element: <IsoApp />,
       },
       { path: "windows", element: <WindowsSoft /> },
       { path: "search", element: <Search /> },
