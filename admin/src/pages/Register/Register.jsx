@@ -73,7 +73,7 @@ const Register = () => {
     onSuccess: (data) => {
       // DO NOT auto-login or navigate
       toast.success(
-        "🎉 Registration Successful!\nYour account is pending admin approval. You will be notified via email once approved.",
+        "🎉 Registration Successful! Login Now!",
         {
           autoClose: 9000,
           position: "top-center",

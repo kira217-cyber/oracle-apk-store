@@ -1,122 +1,49 @@
 import React from "react";
 import { Link } from "react-router";
-import { IoIosApps } from "react-icons/io";
-import { FaGooglePlay } from "react-icons/fa";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import "swiper/css";
 import Categories from "../Categories/Categories";
+import ButtonBanner from "../ButtonBanner/ButtonBanner";
 
 const TopApps = () => {
-  const appData = [
-    {
-      id: 1,
-      name: "App One",
-      image:
-        "https://i.ibb.co.com/5XmZSPWz/detailed-esports-gaming-logo-template-1029473-588861-ezgif-com-avif-to-jpg-converter.jpg",
-      rating: 4.5,
+  // 🔹 React Query + Axios
+  const {
+    data: apps = [],
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["all-apks"],
+    queryFn: async () => {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/all-apks`);
+      return res.data;
     },
-    {
-      id: 2,
-      name: "App Two",
-      image:
-        "https://i.ibb.co.com/G4yyryTZ/cyberpunk-assassins-neon-visage-862264-8569-ezgif-com-avif-to-jpg-converter.jpg",
-      rating: 4.8,
-    },
-    {
-      id: 3,
-      name: "App Three",
-      image:
-        "https://i.ibb.co.com/5XmZSPWz/detailed-esports-gaming-logo-template-1029473-588861-ezgif-com-avif-to-jpg-converter.jpg",
-      rating: 4.1,
-    },
-    {
-      id: 4,
-      name: "App Four",
-      image:
-        "https://i.ibb.co.com/DDn0L7tp/logo-design-technology-company-vector-illustration-1253202-4950-ezgif-com-avif-to-jpg-converter.jpg",
-      rating: 4.6,
-    },
-    {
-      id: 5,
-      name: "App Five",
-      image:
-        "https://i.ibb.co.com/Q3FdLyN2/logo-design-technology-company-vector-illustration-1253202-6803-ezgif-com-avif-to-jpg-converter.jpg",
-      rating: 4.9,
-    },
-    {
-      id: 6,
-      name: "App Six",
-      image:
-        "https://i.ibb.co.com/5XmZSPWz/detailed-esports-gaming-logo-template-1029473-588861-ezgif-com-avif-to-jpg-converter.jpg",
-      rating: 4.2,
-    },
-    {
-      id: 7,
-      name: "App Seven",
-      image:
-        "https://i.ibb.co.com/G4yyryTZ/cyberpunk-assassins-neon-visage-862264-8569-ezgif-com-avif-to-jpg-converter.jpg",
-      rating: 4.7,
-    },
-    {
-      id: 8,
-      name: "App Eight",
-      image:
-        "https://i.ibb.co.com/5XmZSPWz/detailed-esports-gaming-logo-template-1029473-588861-ezgif-com-avif-to-jpg-converter.jpg",
-      rating: 4.3,
-    },
-    {
-      id: 9,
-      name: "App Nine",
-      image:
-        "https://i.ibb.co.com/5XmZSPWz/detailed-esports-gaming-logo-template-1029473-588861-ezgif-com-avif-to-jpg-converter.jpg",
-      rating: 4.4,
-    },
-    {
-      id: 10,
-      name: "App Ten",
-      image:
-        "https://i.ibb.co.com/DDn0L7tp/logo-design-technology-company-vector-illustration-1253202-4950-ezgif-com-avif-to-jpg-converter.jpg",
-      rating: 4.8,
-    },
-    {
-      id: 11,
-      name: "App Eleven",
-      image:
-        "https://i.ibb.co.com/5XmZSPWz/detailed-esports-gaming-logo-template-1029473-588861-ezgif-com-avif-to-jpg-converter.jpg",
-      rating: 4.6,
-    },
-    {
-      id: 12,
-      name: "App Twelve",
-      image:
-        "https://i.ibb.co.com/DDn0L7tp/logo-design-technology-company-vector-illustration-1253202-4950-ezgif-com-avif-to-jpg-converter.jpg",
-      rating: 4.5,
-    },
-    {
-      id: 13,
-      name: "App Thirteen",
-      image:
-        "https://i.ibb.co.com/5XmZSPWz/detailed-esports-gaming-logo-template-1029473-588861-ezgif-com-avif-to-jpg-converter.jpg",
-      rating: 4.9,
-    },
-    {
-      id: 14,
-      name: "App Fourteen",
-      image:
-        "https://i.ibb.co.com/DDn0L7tp/logo-design-technology-company-vector-illustration-1253202-4950-ezgif-com-avif-to-jpg-converter.jpg",
-      rating: 4.7,
-    },
-  ];
+  });
 
+  // 🔹 Chunk apps (UNCHANGED)
   const chunkApps = (arr, size) =>
     arr.reduce(
       (acc, _, i) => (i % size ? acc : [...acc, arr.slice(i, i + size)]),
       []
     );
-  const rows = chunkApps(appData, 7);
+
+  const rows = chunkApps(apps, 7);
+
+  if (isLoading) {
+    return (
+      <div className="text-center py-10 text-gray-500">Loading apps...</div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="text-center py-10 text-red-500">Failed to load apps</div>
+    );
+  }
 
   return (
     <div>
-      {/* ⭐ 120 Degree Shine Effect */}
+      {/* ⭐ 120 Degree Shine Effect (UNCHANGED) */}
       <style>{`
         .auto-shine {
           position: relative;
@@ -147,65 +74,15 @@ const TopApps = () => {
           100% { transform: translateX(150%) skewX(-15deg); }
         }
       `}</style>
+
       {/* Categories */}
       <Categories />
 
-      {/* mobile Header */}
-      <div className="flex flex-col gap-2 md:hidden md:flex-row md:items-stretch md:gap-3">
-        <div className="flex gap-2 md:flex-[2]">
-          <div className="flex-1 gradient-animate text-white px-2 py-1 md:px-6 md:py-3 rounded-md font-bold shadow flex items-center justify-center">
-            <span className="flex gap-2 items-center">
-              Oracle Store <FaGooglePlay size={20} />
-            </span>
-          </div>
+      {/* Button Banner */}
+      <ButtonBanner />
 
-          <div className="flex-1 rgb-badge text-white px-2 py-1 md:px-6 md:py-3 rounded-md font-bold shadow flex items-center justify-center">
-            <span className="flex gap-2 items-center">
-              TOP APP <IoIosApps size={20} />
-            </span>
-          </div>
-        </div>
-
-        <div className="md:flex-[8] relative bg-white rounded-md shadow flex items-center justify-center">
-          <img
-            className="h-20 md:h-full w-full object-cover rounded-md"
-            src="https://i.ibb.co.com/5XmZSPWz/detailed-esports-gaming-logo-template-1029473-588861-ezgif-com-avif-to-jpg-converter.jpg"
-            alt="Logo"
-          />
-          <span className="bg-white absolute top-0 right-0 px-1 py-[0.5] text-black text-sm">
-            Ads
-          </span>
-        </div>
-      </div>
-
-      {/* desktop Header */}
-      <div className="hidden md:flex items-stretch gap-3">
-        <div className="flex-[2] gradient-animate text-white px-6 py-3 rounded-md font-bold shadow flex items-center justify-center">
-          <span className="flex gap-2 items-center">
-            Oracle Store <FaGooglePlay size={20} />
-          </span>
-        </div>
-
-        <div className="flex-[8] relative bg-white rounded-md shadow flex items-center justify-center">
-          <img
-            className="h-full max-h-14 w-full object-cover rounded-md"
-            src="https://i.ibb.co.com/5XmZSPWz/detailed-esports-gaming-logo-template-1029473-588861-ezgif-com-avif-to-jpg-converter.jpg"
-            alt="Logo"
-          />
-          <span className="bg-white absolute top-0 right-0 px-1 py-[0.5] text-black text-sm">
-            Ads
-          </span>
-        </div>
-
-        <div className="flex-[2] rgb-badge text-white px-6 py-3 rounded-md font-bold shadow flex items-center justify-center">
-          <span className="flex gap-2 items-center">
-            TOP APP <IoIosApps size={20} />
-          </span>
-        </div>
-      </div>
-
-      {/* Apps */}
-      <div className="">
+      {/* Apps Grid */}
+      <div>
         {rows.map((row, index) => (
           <div
             key={index}
@@ -213,28 +90,26 @@ const TopApps = () => {
           >
             {row.map((app) => (
               <div
-                key={app.id}
+                key={app._id}
                 className="text-center backdrop-blur-xl bg-white/30 p-1 md:p-2 rounded-lg shadow-sm hover:shadow-md transition"
               >
-                <Link to={`/app/${app.id}`}>
+                <Link to={`/app-details/${app._id}`}>
                   <div className="auto-shine shine-animate">
                     <img
-                      src={app.image}
-                      alt={app.name}
-                      className="w-24 h-24 md:w-36 md:h-36 mx-auto rounded-md md:rounded-2xl shadow"
+                      src={`${import.meta.env.VITE_API_URL}${app.apkLogo}`}
+                      alt={app.apkTitle}
+                      className="w-24 h-24 md:w-36 md:h-36 mx-auto rounded-md md:rounded-2xl shadow object-cover"
                     />
                     <div className="shine-layer"></div>
                   </div>
                 </Link>
 
                 <Link
-                  to={`/app/${app.id}`}
+                  to={`/app/${app._id}`}
                   className="block mt-2 text-sm font-semibold hover:text-blue-600"
                 >
-                  {app.name}
+                  {app.apkTitle}
                 </Link>
-
-                <p className="text-gray-500 text-sm">{app.rating} ★</p>
               </div>
             ))}
           </div>

@@ -219,6 +219,26 @@ router.get("/all-apks", async (req, res) => {
   }
 });
 
+// GET: Single APK by ID
+router.get("/apk/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const apk = await UploadApk.findById(id)
+      .select("-permissionReason")
+      .populate("user", "name email");
+
+    if (!apk) {
+      return res.status(404).json({ message: "APK not found" });
+    }
+
+    res.json(apk);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
 // GET: Admin - All APKs with search and filter
 router.get("/admin/apks", async (req, res) => {
   try {

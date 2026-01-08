@@ -35,6 +35,7 @@ const Step1Form = ({ onNext, formData = {}, setFormData }) => {
       appPlatform: formData.appPlatform || "",
       apkFile: formData.apkFile || null,
       screenshots: formData.screenshots || [],
+      websiteUrl: formData.websiteUrl || "",
       apkVersion: formData.apkVersion || "",
       tagInput: "",
     },
@@ -442,6 +443,29 @@ const Step1Form = ({ onNext, formData = {}, setFormData }) => {
                 </motion.div>
               ))}
             </div>
+          )}
+        </div>
+
+        {/* Website Url */}
+        <div>
+          <label className="block text-xl font-semibold text-orange-300 mb-3">
+            Website URL (Optional)
+          </label>
+          <Controller
+            name="websiteUrl"
+            control={control}
+            render={({ field }) => (
+              <input
+                {...field}
+                placeholder="url: https://example.com"
+                className="w-full px-6 py-5 bg-gray-800/70 border border-gray-700 rounded-2xl text-white placeholder-gray-500 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/20 outline-none transition duration-200"
+              />
+            )}
+          />
+          {errors.websiteUrl && (
+            <p className="text-orange-400 mt-2 text-sm">
+              {errors.websiteUrl.message}
+            </p>
           )}
         </div>
 
