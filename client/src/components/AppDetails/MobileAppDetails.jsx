@@ -42,7 +42,9 @@ const fetchApkDetails = async (id) => {
 
 const fetchDeveloperDetails = async (developerId) => {
   if (!developerId) return null;
-  const { data } = await axios.get(`${API_BASE}/api/developer/details/${developerId}`);
+  const { data } = await axios.get(
+    `${API_BASE}/api/developer/details/${developerId}`
+  );
   return data;
 };
 
@@ -205,8 +207,6 @@ const MobileAppDetails = () => {
             </SwiperSlide>
           ))}
         </Swiper>
-
-        
       </div>
 
       {/* ================= About this app ================= */}
@@ -239,7 +239,7 @@ const MobileAppDetails = () => {
       <div className="px-4 md:hidden">
         <div className="font-sans">
           <DataSafety />
-          <RatingsAndReviews />
+          <RatingsAndReviews appId={id} />
         </div>
       </div>
 
