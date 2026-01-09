@@ -107,4 +107,37 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// NEW: GET single user by ID (public info only)
+router.get("/:id", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select(
+      "firstName lastName name email" // only send safe fields
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      user: {
+        id: user._id,
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        name: user.name || "",
+        email: user.email,
+      },
+    });
+  } catch (err) {
+    console.error("Fetch User Error:", err);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+});
+
 export default router;

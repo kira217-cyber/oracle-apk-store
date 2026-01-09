@@ -42,7 +42,9 @@ const fetchApkDetails = async (id) => {
 
 const fetchDeveloperDetails = async (developerId) => {
   if (!developerId) return null;
-  const { data } = await axios.get(`${API_BASE}/api/developer/details/${developerId}`);
+  const { data } = await axios.get(
+    `${API_BASE}/api/developer/details/${developerId}`
+  );
   return data;
 };
 
@@ -193,7 +195,6 @@ const DesktopAppDetails = () => {
                 </span>
               </div>
               <div>
-               
                 <p className="mt-4 semifont-bold text-gray-600 text-[16px]">
                   {apk.fullAbout}
                 </p>
@@ -218,7 +219,7 @@ const DesktopAppDetails = () => {
               </div>
             </div>
             {/* Ratings and Reviews */}
-            <RatingsAndReviews />
+            <RatingsAndReviews appId={id} />
           </div>
           {/* Right Section - App Icon */}
           <div className="flex w-[30%] md:justify-end">
