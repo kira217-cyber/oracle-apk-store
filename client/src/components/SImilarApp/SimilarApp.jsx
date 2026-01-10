@@ -12,7 +12,7 @@ const fetchAllApks = async () => {
 };
 
 const SimilarApp = () => {
-  const { id: currentAppId } = useParams(); // Current app ID
+  const { id: currentApkId } = useParams(); // যেমন: "gracho-924304"
 
   const {
     data: allApks = [],
@@ -21,32 +21,44 @@ const SimilarApp = () => {
   } = useQuery({
     queryKey: ["allApks"],
     queryFn: fetchAllApks,
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    staleTime: 1000 * 60 * 5, // 5 মিনিট ক্যাশ
   });
 
-  // Get current app to know its category
-  const currentApp = allApks.find((app) => app._id === currentAppId);
+  // বর্তমান অ্যাপ খুঁজে বের করা
+  const currentApp = allApks.find((app) => app.apk_Id === currentApkId);
 
   if (isLoading) {
     return <div className="text-sm text-gray-500">Loading similar apps...</div>;
   }
 
   if (isError || !currentApp) {
-    return null; // Hide section if error or no current app
+    return null;
   }
 
-  // Filter similar apps: same category, exclude current app, limit to 3
+  // বর্তমান অ্যাপের ট্যাগগুলো
+  const currentTags = currentApp.tags || [];
+
+  // ফিল্টারিং লজিক:
+  // 1. নিজের অ্যাপ না হওয়া
+  // 2. একই ক্যাটাগরি
+  // 3. অন্তত একটা ট্যাগ মিলে যাওয়া
+  // 4. active স্ট্যাটাস
+  // তারপর সবচেয়ে নতুন ৫টা নেওয়া
   const similarApps = allApks
-    .filter(
-      (app) =>
-        app._id !== currentAppId &&
-        app.appCategory === currentApp.appCategory &&
-        app.status === "active" // Optional: only show active/published apps
-    )
-    .slice(0, 3);
+    .filter((app) => {
+      if (app.apk_Id === currentApkId) return false;
+      if (app.status !== "active") return false;
+      if (app.appCategory !== currentApp.appCategory) return false;
+
+      // ট্যাগ মিলছে কিনা চেক
+      const appTags = app.tags || [];
+      return currentTags.some((tag) => appTags.includes(tag));
+    })
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // newest first
+    .slice(0, 5); // সর্বোচ্চ ৫টা
 
   if (similarApps.length === 0) {
-    return null; // Hide if no similar apps
+    return null;
   }
 
   return (
@@ -60,7 +72,7 @@ const SimilarApp = () => {
         {similarApps.map((app) => (
           <Link
             key={app._id}
-            to={`/app-details/${app._id}`}
+            to={`/app-details/${app.apk_Id}`}
             className="flex gap-4 items-center hover:bg-gray-50/50 -mx-4 px-4 py-2 rounded-lg transition"
           >
             <img
@@ -76,8 +88,7 @@ const SimilarApp = () => {
                 {app.user?.email?.split("@")[0] || "Developer"}
               </p>
               <div className="flex items-center gap-1 text-sm text-gray-600 mt-1">
-                <span>4.3</span>{" "}
-                {/* You can make this dynamic later if you have ratings */}
+                <span>4.3</span>
                 <FaStar className="text-green-600" />
               </div>
             </div>

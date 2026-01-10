@@ -21,6 +21,7 @@ import RatingsAndReviews from "../RatingsAndReviews/RatingsAndReviews";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import SimilarApp from "../SImilarApp/SimilarApp";
+import { toast } from "react-toastify";
 
 // Helper to format date like "Dec 30, 2025"
 const formatDate = (dateString) => {
@@ -37,6 +38,7 @@ const API_BASE = `${import.meta.env.VITE_API_URL}`; // adjust to your backend UR
 
 const fetchApkDetails = async (id) => {
   const { data } = await axios.get(`${API_BASE}/api/apk/${id}`);
+
   return data;
 };
 
@@ -47,6 +49,10 @@ const fetchDeveloperDetails = async (developerId) => {
   );
   return data;
 };
+
+const handleNavigate = () => {
+  toast.info("Developer profile page is under construction.");
+  }
 
 const DesktopAppDetails = () => {
   const { id } = useParams(); // get the :id from URL
@@ -102,6 +108,9 @@ const DesktopAppDetails = () => {
 
   // Base URL for images
   const imageBase = API_BASE;
+  console.log("APK Data:", apk.apk_Id);
+
+  
 
   return (
     <>
@@ -112,7 +121,7 @@ const DesktopAppDetails = () => {
             <h1 className="text-3xl md:text-4xl font-bold text-black">
               {apk.apkTitle}
             </h1>
-            <Link to="/my-apps" className="text-green-600 font-bold text-lg">
+            <Link onClick={handleNavigate} className="text-green-600 font-bold text-lg">
               {developerName}
             </Link>
             {/* Ratings / Stats - keeping static as in original, you can make dynamic later */}
@@ -214,12 +223,12 @@ const DesktopAppDetails = () => {
               </div>
               <div className="hidden md:block">
                 <div className="font-sans">
-                  <DataSafety />
+                  <DataSafety apk={apk} />
                 </div>
               </div>
             </div>
             {/* Ratings and Reviews */}
-            <RatingsAndReviews appId={id} />
+            <RatingsAndReviews apkId={apk._id} />
           </div>
           {/* Right Section - App Icon */}
           <div className="flex w-[30%] md:justify-end">

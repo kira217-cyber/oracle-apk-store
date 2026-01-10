@@ -21,6 +21,7 @@ import RatingsAndReviews from "../RatingsAndReviews/RatingsAndReviews";
 import DataSafety from "../DataSafety/DataSafety";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 // Helper to format date
 const formatDate = (dateString) => {
@@ -38,6 +39,10 @@ const API_BASE = `${import.meta.env.VITE_API_URL}`;
 const fetchApkDetails = async (id) => {
   const { data } = await axios.get(`${API_BASE}/api/apk/${id}`);
   return data;
+};
+
+const handleNavigate = () => {
+  toast.info("Developer profile page is under construction.");
 };
 
 const fetchDeveloperDetails = async (developerId) => {
@@ -126,7 +131,7 @@ const MobileAppDetails = () => {
               </h1>
 
               <Link
-                to="/my-apps"
+                onClick={handleNavigate}
                 className="text-sm text-green-700 font-semibold leading-tight"
               >
                 {developerName}
@@ -238,7 +243,7 @@ const MobileAppDetails = () => {
       {/* Data Safety & Ratings */}
       <div className="px-4 md:hidden">
         <div className="font-sans">
-          <DataSafety />
+          <DataSafety apk={apk} />
           <RatingsAndReviews appId={id} />
         </div>
       </div>

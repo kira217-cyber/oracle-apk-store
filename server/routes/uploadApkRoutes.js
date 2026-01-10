@@ -78,6 +78,18 @@ const upload = multer({
   limits: { fileSize: 25 * 1024 * 1024 }, // 25MB per file
 });
 
+// Helper function
+const generateApkId = (apkTitle) => {
+  const slug = apkTitle
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
+
+  const randomNumber = Math.floor(100000 + Math.random() * 900000);
+  return `${slug}-${randomNumber}`;
+};
+
 // POST: Upload APK
 router.post(
   "/upload-apk",
@@ -91,16 +103,13 @@ router.post(
     try {
       const data = { ...req.body };
 
-      // CRITICAL FIX: Get user ID from form data sent by frontend
       const userIdFromFrontend = data.user;
-
       if (!userIdFromFrontend) {
         return res.status(401).json({
           error: "User not authenticated. Please log in.",
         });
       }
 
-      // Assign the user ID from frontend
       data.user = userIdFromFrontend;
 
       // Parse JSON-stringified arrays
@@ -120,19 +129,13 @@ router.post(
 
       arrayFields.forEach((field) => {
         if (data[field]) {
-          try {
-            data[field] = JSON.parse(data[field]);
-          } catch (err) {
-            return res.status(400).json({
-              error: `Invalid JSON format for ${field}`,
-            });
-          }
+          data[field] = JSON.parse(data[field]);
         } else {
           data[field] = [];
         }
       });
 
-      // Map uploaded file paths
+      // File paths
       data.apkLogo = req.files["apkLogo"]
         ? `/uploads/${req.files["apkLogo"][0].filename}`
         : null;
@@ -149,33 +152,30 @@ router.post(
         ? req.files["screenshots"].map((file) => `/uploads/${file.filename}`)
         : [];
 
-      // Server-side validation
-      if (!data.apkLogo) {
+      // Validation
+      if (!data.apkLogo)
         return res.status(400).json({ error: "APK Logo is required" });
-      }
-      if (!data.apkFile) {
+      if (!data.apkFile)
         return res.status(400).json({ error: "APK File is required" });
-      }
-      if (data.screenshots.length < 4 || data.screenshots.length > 12) {
-        return res.status(400).json({
-          error: "Must upload between 4 and 12 screenshots",
-        });
-      }
-      if (data.tags.length < 5) {
+      if (data.screenshots.length < 4 || data.screenshots.length > 12)
+        return res
+          .status(400)
+          .json({ error: "Must upload between 4 and 12 screenshots" });
+      if (data.tags.length < 5)
         return res.status(400).json({ error: "Minimum 5 tags required" });
-      }
-      if (data.declarations.length !== 4) {
-        return res.status(400).json({
-          error: "All 4 declarations must be checked",
-        });
-      }
+      if (data.declarations.length !== 4)
+        return res
+          .status(400)
+          .json({ error: "All 4 declarations must be checked" });
 
-      // Save to database
+      // 🔥 Generate apk_Id
+      data.apk_Id = generateApkId(data.apkTitle);
+
       const newUpload = new UploadApk(data);
       await newUpload.save();
 
       res.status(201).json({
-        message: "APK uploaded and published successfully!",
+        message: "APK uploaded successfully!",
         apk: newUpload,
       });
     } catch (error) {
@@ -219,12 +219,13 @@ router.get("/all-apks", async (req, res) => {
   }
 });
 
-// GET: Single APK by ID
-router.get("/apk/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
 
-    const apk = await UploadApk.findById(id)
+// GET: Single APK by apk_Id
+router.get("/apk/:apkId", async (req, res) => {
+  try {
+    const { apkId } = req.params;
+
+    const apk = await UploadApk.findOne({ apk_Id: apkId })
       .select("-permissionReason")
       .populate("user", "name email");
 
@@ -234,6 +235,7 @@ router.get("/apk/:id", async (req, res) => {
 
     res.json(apk);
   } catch (error) {
+    console.error("Fetch APK error:", error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -304,7 +306,9 @@ router.post("/admin/update-status/:id", async (req, res) => {
     // Send email to developer
     if (apk.user && apk.user.email) {
       let subject = "";
-      let text = `Hello ${apk.user.name || "Developer"},\n\nYour app "${apk.apkTitle}" status has been updated.\nNew Status: ${apk.status.toUpperCase()}\n`;
+      let text = `Hello ${apk.user.name || "Developer"},\n\nYour app "${
+        apk.apkTitle
+      }" status has been updated.\nNew Status: ${apk.status.toUpperCase()}\n`;
 
       if (message) {
         text += `\nAdmin Message: ${message}\n`;
@@ -333,8 +337,7 @@ router.get("/my-apks", async (req, res) => {
   const userId = req.query.user;
   if (!userId) return res.status(401).json({ error: "User ID required" });
 
-  const apks = await UploadApk.find({ user: userId })
-    .sort({ createdAt: -1 });
+  const apks = await UploadApk.find({ user: userId }).sort({ createdAt: -1 });
   res.json(apks);
 });
 

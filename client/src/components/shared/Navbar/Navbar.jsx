@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Search, Mic, LogOut } from "lucide-react";
 import { Link, NavLink, useNavigate } from "react-router";
 import { useAuth } from "../../../hooks/useAuth";
+import { toast } from "react-toastify";
 
 const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -13,6 +14,10 @@ const Navbar = () => {
 
   const toggleDropdown = () => {
     setDropdownOpen((prev) => !prev);
+  };
+
+  const handleNavigate = () => {
+    toast.info("Page is under construction.");
   };
 
   const handleLogout = () => {
@@ -78,30 +83,18 @@ const Navbar = () => {
               >
                 HOME
               </NavLink>
-              <NavLink
-                to="/android"
-                className={({ isActive }) =>
-                  `font-semibold text-md transition ${
-                    isActive
-                      ? "text-green-700 font-bold"
-                      : "hover:text-green-700"
-                  }`
-                }
+              <button
+                onClick={handleNavigate}
+                className="font-semibold text-md transition cursor-pointer hover:text-green-700"
               >
                 ANDROID APP
-              </NavLink>
-              <NavLink
-                to="/iso"
-                className={({ isActive }) =>
-                  `font-semibold text-md transition ${
-                    isActive
-                      ? "text-green-700 font-bold"
-                      : "hover:text-green-700"
-                  }`
-                }
+              </button>
+              <button
+                onClick={handleNavigate}
+                className="font-semibold text-md transition cursor-pointer hover:text-green-700"
               >
                 ISO APP
-              </NavLink>
+              </button>
               {/* <NavLink
                 to="/my-apps"
                 className={({ isActive }) =>

@@ -37,6 +37,7 @@ const AllApk = () => {
     { value: "rejected", label: "Rejected Apps" },
     { value: "pending", label: "Pending Apps" },
   ];
+  console.log(apks);
 
   const fetchApks = async (querySearch = "", queryStatus = "pending") => {
     setLoading(true);
@@ -57,16 +58,14 @@ const AllApk = () => {
           whatsapp: "N/A",
         };
 
-        if (apk.user && typeof apk.user === "object" && apk.user.fullName) {
+        if (apk.user && typeof apk.user === "object") {
           developerDetails = {
-            fullName: apk.user.fullName || "Unknown",
+            fullName: apk.user.fullName?.trim() || "Unknown Developer",
             email: apk.user.email || "N/A",
-            companyName: apk.user.companyName || "N/A",
+            companyName: apk.user.companyName?.trim() || "N/A",
             country: apk.user.country || "N/A",
             whatsapp: apk.user.whatsapp || "N/A",
           };
-        } else if (apk.user && typeof apk.user === "string") {
-          developerDetails.email = "ID Only (Check DB)";
         }
 
         return { ...apk, developerDetails };
@@ -149,7 +148,7 @@ const AllApk = () => {
   };
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1 }, 
+    visible: { y: 0, opacity: 1 },
   };
 
   return (
@@ -398,7 +397,10 @@ const AllApk = () => {
                       </p>
                       <p className="flex items-center gap-2  text-gray-400">
                         <FaEnvelope className="text-blue-400" />
-                       <span className="truncate max-w-[120px]"> {apk.developerDetails.email}</span>
+                        <span className="truncate max-w-[120px]">
+                          {" "}
+                          {apk.developerDetails.email}
+                        </span>
                       </p>
                       {apk.developerDetails.companyName !== "N/A" && (
                         <p className="flex items-center gap-2 text-gray-400">
@@ -420,7 +422,9 @@ const AllApk = () => {
                       )}
                       <p className="flex items-center gap-2 text-gray-400 mt-3">
                         <FaCalendarAlt className="text-blue-400" />
-                     <span className="truncate max-w-[120px]">{formatDate(apk.createdAt)}</span>
+                        <span className="truncate max-w-[120px]">
+                          {formatDate(apk.createdAt)}
+                        </span>
                       </p>
                     </div>
                     <div className="mt-4">

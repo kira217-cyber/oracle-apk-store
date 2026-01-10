@@ -1,4 +1,4 @@
-// RatingsAndReviews.jsx - Final Version with Single User Fetch Fallback
+// RatingsAndReviews.jsx - Fixed version using real _id (ObjectId)
 import React, { useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import {
@@ -29,17 +29,22 @@ const formatDate = (dateString) => {
   });
 };
 
-// Fetch all reviews for the app (backend populates userId minimally or as ObjectId)
-const fetchReviews = async (appId) => {
-  const { data } = await axios.get(`${API_BASE}/api/reviews/${appId}`);
+// Fetch reviews using real ObjectId (_id)
+const fetchReviews = async (apkId) => {
+  const { data } = await axios.get(`${API_BASE}/api/reviews/${apkId}`);
   return data;
 };
 
-// Fetch single user by ID (your existing route: GET /api/users/:id)
+// Fetch single user by ID
 const fetchUser = async (userId) => {
   if (!userId) return null;
-  const { data } = await axios.get(`${API_BASE}/api/users/${userId}`);
-  return data.user; // { id, name, email, ... }
+  try {
+    const { data } = await axios.get(`${API_BASE}/api/users/${userId}`);
+    return data.user; // Expecting { id, name, email, ... }
+  } catch (err) {
+    console.error("Failed to fetch user:", err);
+    return null;
+  }
 };
 
 const StarRatingInput = ({ rating, setRating }) => {
@@ -58,32 +63,33 @@ const StarRatingInput = ({ rating, setRating }) => {
   );
 };
 
-const ReviewItem = ({ review, userData }) => {
+const ReviewItem = ({ review, userData, currentUser }) => {
   const queryClient = useQueryClient();
 
   const updateHelpful = useMutation({
-    mutationFn: (id) => axios.patch(`${API_BASE}/api/reviews/${id}/helpful`),
+    mutationFn: (id) =>
+      axios.patch(`${API_BASE}/api/reviews/${id}/helpful`, {
+        userId: currentUser?.id || currentUser?._id,
+      }),
     onSuccess: () => {
-      queryClient.invalidateQueries(["reviews", review.appId]);
+      queryClient.invalidateQueries(["reviews", review.apk_Id]);
       toast.success("Thank you for your feedback!");
     },
-    onError: () => {
-      toast.error("Failed to mark as helpful");
+    onError: (err) => {
+      toast.error(err.response?.data?.error || "Failed to mark as helpful");
     },
   });
 
-  // Determine display name - priority: fetched user > review.userId object > fallback
+  // Determine display name
   let userName = "Anonymous User";
 
   if (userData) {
-    // From fetchUser API call
     if (userData.name && userData.name.trim()) {
       userName = userData.name.trim();
     } else if (userData.email) {
       userName = userData.email.split("@")[0];
     }
   } else if (review.userId && typeof review.userId === "object") {
-    // If backend already populated some fields
     if (review.userId.name && review.userId.name.trim()) {
       userName = review.userId.name.trim();
     } else if (review.userId.email) {
@@ -97,7 +103,6 @@ const ReviewItem = ({ review, userData }) => {
         <div className="flex items-center gap-3">
           <FaUserCircle className="text-3xl text-gray-400 flex-shrink-0" />
           <div>
-            {/* This will now show real name (e.g., "Hablu Ali") */}
             <p className="text-sm font-medium text-gray-800">{userName}</p>
             <div className="flex items-center gap-1 mt-1">
               {[...Array(5)].map((_, i) => (
@@ -137,6 +142,7 @@ const ReviewItem = ({ review, userData }) => {
         >
           Yes
         </button>
+
         <button className="border px-4 py-1.5 rounded-full text-sm cursor-pointer hover:bg-red-50 transition">
           No
         </button>
@@ -145,43 +151,44 @@ const ReviewItem = ({ review, userData }) => {
   );
 };
 
-const RatingsAndReviews = ({ appId }) => {
+const RatingsAndReviews = ({ apkId }) => {
+  // ← Changed prop name to apkId (recommended)
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [modalOpen, setModalOpen] = useState(false);
   const [newRating, setNewRating] = useState(0);
   const [newComment, setNewComment] = useState("");
 
-  // Main query: fetch reviews + stats
+  // Main query: fetch reviews + stats using real ObjectId
   const {
     data: reviewData,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["reviews", appId],
-    queryFn: () => fetchReviews(appId),
-    enabled: !!appId,
+    queryKey: ["reviews", apkId],
+    queryFn: () => fetchReviews(apkId),
+    enabled: !!apkId,
   });
 
-  // Extract unique userIds from reviews (only if userId is string/ObjectId)
+  // Extract unique userIds
   const userIds =
-    reviewData?.reviews
+    reviewData?.data?.reviews
       ?.map((rev) =>
         typeof rev.userId === "string" ? rev.userId : rev.userId?._id
       )
       .filter(Boolean) || [];
 
-  // Parallel fetch all needed users (only if not already populated as object)
+  // Parallel fetch users
   const userQueries = useQueries({
     queries: userIds.map((id) => ({
       queryKey: ["user", id],
       queryFn: () => fetchUser(id),
-      enabled: !!id && reviewData?.reviews?.length > 0,
-      staleTime: 1000 * 60 * 10, // Cache for 10 minutes
+      enabled: !!id && userIds.length > 0,
+      staleTime: 1000 * 60 * 10, // 10 minutes
     })),
   });
 
-  // Create map: userId → user data
+  // User map
   const userMap = {};
   userQueries.forEach((query, index) => {
     if (query.data) {
@@ -192,7 +199,7 @@ const RatingsAndReviews = ({ appId }) => {
   const createReview = useMutation({
     mutationFn: (newReview) => axios.post(`${API_BASE}/api/reviews`, newReview),
     onSuccess: () => {
-      queryClient.invalidateQueries(["reviews", appId]);
+      queryClient.invalidateQueries(["reviews", apkId]);
       toast.success("Review submitted successfully!");
       setModalOpen(false);
       setNewRating(0);
@@ -200,27 +207,24 @@ const RatingsAndReviews = ({ appId }) => {
     },
     onError: (err) => {
       toast.error(
-        err.response?.data?.message || "Failed to submit review. Try again."
+        err.response?.data?.error || "Failed to submit review. Try again."
       );
     },
   });
 
   const handleSubmit = () => {
-    if (!user) {
-      toast.warn("Please login to submit a review");
-      return;
-    }
-    if (newRating === 0) {
-      toast.warn("Please select a star rating");
-      return;
-    }
+    if (!user) return toast.warn("Please login to submit a review");
+    if (!apkId) return toast.error("Invalid APK ID");
+    if (!newRating) return toast.warn("Please select a rating");
 
-    createReview.mutate({
-      appId,
+    const payload = {
+      apkId, // ← Changed key to match backend recommendation
       userId: user.id || user._id,
       rating: newRating,
-      comment: newComment.trim() || null,
-    });
+      comment: newComment || undefined,
+    };
+
+    createReview.mutate(payload);
   };
 
   if (isLoading)
@@ -235,18 +239,20 @@ const RatingsAndReviews = ({ appId }) => {
       </div>
     );
 
-  const average = reviewData?.average
-    ? Number(reviewData.average).toFixed(1)
+  // Important: backend now returns { success: true, data: { reviews, average, total, distribution } }
+  const reviewContent = reviewData?.data || reviewData || {};
+  const average = reviewContent.average
+    ? Number(reviewContent.average).toFixed(1)
     : "0.0";
-  const total = reviewData?.total || 0;
-  const distribution = reviewData?.distribution || {
+  const total = reviewContent.total || 0;
+  const distribution = reviewContent.distribution || {
     1: 0,
     2: 0,
     3: 0,
     4: 0,
     5: 0,
   };
-  const reviews = reviewData?.reviews || [];
+  const reviews = reviewContent.reviews || [];
 
   return (
     <>
@@ -336,8 +342,9 @@ const RatingsAndReviews = ({ appId }) => {
               return (
                 <ReviewItem
                   key={rev._id}
-                  review={{ ...rev, appId }}
+                  review={{ ...rev, apk_Id: apkId }}
                   userData={userData}
+                  currentUser={user}
                 />
               );
             })
