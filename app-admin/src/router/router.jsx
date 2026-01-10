@@ -13,6 +13,11 @@ import Analytics from "../pages/Analytics/Analytics";
 import AllDeveloper from "../pages/AllDeveloper/AllDeveloper";
 import AddCategory from "../pages/AddCategory/AddCategory";
 import BannerPromotion from "../pages/BannerPromotion/BannerPromotion";
+import PopularPromotion from "../pages/PopularPromotion/PopularPromotion";
+import AdsPromotionTwoController from "../pages/AdsPromotionTwoController/AdsPromotionTwoController";
+import AdsPromotionOneController from "../pages/AdsPromotionOneController/AdsPromotionOneController";
+import BadgeAppController from "../pages/BadgeAppController/BadgeAppController";
+import MostDownloadPromotionController from "../pages/MostDownloadPromotionController/MostDownloadPromotionController";
 
 export const routes = createBrowserRouter([
   {
@@ -99,6 +104,46 @@ export const routes = createBrowserRouter([
         element: (
           <PrivateRoute>
             <BannerPromotion></BannerPromotion>{" "}
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "promotions/popular",
+        element: (
+          <PrivateRoute>
+            <PopularPromotion></PopularPromotion>{" "}
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "promotions/ads-one",
+        element: (
+          <PrivateRoute>
+            <AdsPromotionOneController></AdsPromotionOneController>{" "}
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "promotions/ads-two",
+        element: (
+          <PrivateRoute>
+            <AdsPromotionTwoController></AdsPromotionTwoController>{" "}
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "promotions/badge-app",
+        element: (
+          <PrivateRoute>
+            <BadgeAppController></BadgeAppController>{" "}
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "promotions/most-download",
+        element: (
+          <PrivateRoute>
+            <MostDownloadPromotionController></MostDownloadPromotionController>{" "}
           </PrivateRoute>
         ),
       },

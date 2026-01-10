@@ -535,7 +535,7 @@ const BannerPromotion = () => {
                       name="app_url"
                       value={formData.app_url}
                       onChange={handleInputChange}
-                      placeholder="e.g. /app-details/123"
+                      placeholder="e.g. app-924304 (apk_Id)"
                       required
                       className="w-full text-base text-blue-300 bg-transparent text-center outline-none placeholder-gray-500 py-3 cursor-text"
                     />

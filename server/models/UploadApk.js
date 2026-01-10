@@ -3,6 +3,12 @@ const { Schema } = mongoose;
 
 const uploadApkSchema = new Schema(
   {
+    apk_Id: {
+      type: String,
+      unique: true,
+      index: true,
+    },
+
     apkTitle: {
       type: String,
       required: true,
@@ -43,9 +49,7 @@ const uploadApkSchema = new Schema(
       type: [String],
       required: true,
       validate: {
-        validator: function (val) {
-          return val.length >= 4 && val.length <= 12;
-        },
+        validator: (val) => val.length >= 4 && val.length <= 12,
         message: "Screenshots must be between 4 and 12",
       },
     },
@@ -62,9 +66,7 @@ const uploadApkSchema = new Schema(
       type: [String],
       required: true,
       validate: {
-        validator: function (val) {
-          return val.length >= 5;
-        },
+        validator: (val) => val.length >= 5,
         message: "Minimum 5 tags required",
       },
     },
@@ -107,51 +109,21 @@ const uploadApkSchema = new Schema(
       enum: ["Yes", "No", "Both"],
       required: true,
     },
-    childDataTypes: {
-      type: [String],
-      default: [],
-    },
-    purposeOfDataCollection: {
-      type: [String],
-      default: [],
-    },
-    dataSharedWith: {
-      type: [String],
-      default: [],
-    },
-    dataProtection: {
-      type: [String],
-      default: [],
-    },
-    dataRetention: {
-      type: [String],
-      default: [],
-    },
-    userControls: {
-      type: [String],
-      default: [],
-    },
-    childCompliance: {
-      type: [String],
-      default: [],
-    },
-    sensitivePermissions: {
-      type: [String],
-      default: [],
-    },
-    permissionReason: {
-      type: String,
-      default: "",
-    },
+    childDataTypes: { type: [String], default: [] },
+    purposeOfDataCollection: { type: [String], default: [] },
+    dataSharedWith: { type: [String], default: [] },
+    dataProtection: { type: [String], default: [] },
+    dataRetention: { type: [String], default: [] },
+    userControls: { type: [String], default: [] },
+    childCompliance: { type: [String], default: [] },
+    sensitivePermissions: { type: [String], default: [] },
+    permissionReason: { type: String, default: "" },
     showsAds: {
       type: String,
       enum: ["Yes", "No"],
       required: true,
     },
-    adDetails: {
-      type: [String],
-      default: [],
-    },
+    adDetails: { type: [String], default: [] },
     supportContact: {
       type: String,
       required: true,
@@ -161,9 +133,7 @@ const uploadApkSchema = new Schema(
       type: [String],
       required: true,
       validate: {
-        validator: function (val) {
-          return val.length === 4;
-        },
+        validator: (val) => val.length === 4,
         message: "All 4 declarations must be checked",
       },
     },
@@ -172,7 +142,6 @@ const uploadApkSchema = new Schema(
       ref: "Developer",
       required: true,
     },
-    // New fields for admin approval
     status: {
       type: String,
       enum: ["pending", "approved", "active", "deactive", "rejected"],
@@ -189,7 +158,7 @@ const uploadApkSchema = new Schema(
 // Indexes
 uploadApkSchema.index({ user: 1 });
 uploadApkSchema.index({ status: 1 });
-uploadApkSchema.index({ apkTitle: "text", "user.email": "text" }); // For search support if needed
+uploadApkSchema.index({ apk_Id: 1 });
 
 const UploadApk = mongoose.model("UploadApk", uploadApkSchema);
 export default UploadApk;

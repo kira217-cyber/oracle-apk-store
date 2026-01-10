@@ -115,7 +115,7 @@ const TopApps = () => {
                 key={app._id}
                 className="text-center backdrop-blur-xl bg-white/30 p-1 md:p-2 rounded-lg shadow-sm hover:shadow-md transition"
               >
-                <Link to={`/app-details/${app._id}`}>
+                <Link to={`/app-details/${app.apk_Id}`}>
                   <div className="auto-shine shine-animate">
                     <img
                       src={`${import.meta.env.VITE_API_URL}${app.apkLogo}`}
@@ -127,7 +127,7 @@ const TopApps = () => {
                 </Link>
 
                 <Link
-                  to={`/app/${app._id}`}
+                  to={`/app-details/${app.apk_Id}`}
                   className="block mt-2 text-sm font-semibold hover:text-blue-600"
                 >
                   {app.apkTitle}

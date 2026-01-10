@@ -44,6 +44,10 @@ const Sidebar = () => {
   const promotionSubItems = [
     { to: "/promotions/banner", text: "Banner Promotion" },
     { to: "/promotions/popular", text: "Popular Promotion" },
+    { to: "/promotions/ads-one", text: "Ads Promotion One" },
+    { to: "/promotions/ads-two", text: "Ads Promotion Two" },
+    { to: "/promotions/badge-app", text: "Badge App" },
+    { to: "/promotions/most-download", text: "Most Download" },
   ];
 
   const handleLogout = () => {

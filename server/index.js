@@ -6,10 +6,14 @@ import userRoutes from "./routes/userRoutes.js";
 import developerRoutes from "./routes/developerRoutes.js";
 import uploadApkRoutes from "./routes/uploadApkRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
-import categoriesRouter from './routes/categoriesRoutes.js';
-import bannerRoutes from './routes/bannerRoutes.js';
-import reviewAndCommentRoutes from './routes/reviewAndCommentRoutes.js';
-
+import categoriesRouter from "./routes/categoriesRoutes.js";
+import bannerRoutes from "./routes/bannerRoutes.js";
+import reviewAndCommentRoutes from "./routes/reviewAndCommentRoutes.js";
+import popularRoutes from "./routes/popularRoutes.js";
+import adsPromotionOneRoutes from "./routes/adsPromotionOneRoutes.js";
+import adsPromotionTwoRoutes from "./routes/adsPromotionTwoRoutes.js";
+import badgeAppRoutes from "./routes/badgeAppRoutes.js";
+import mostDownloadRoutes from "./routes/mostDownloadRoutes.js";
 
 dotenv.config();
 
@@ -25,10 +29,14 @@ app.use("/api/users", userRoutes);
 app.use("/api/developer", developerRoutes);
 app.use("/api", uploadApkRoutes);
 app.use("/api/admin", adminRoutes);
-app.use('/api/categories', categoriesRouter);
-app.use('/api/banners', bannerRoutes);
+app.use("/api/categories", categoriesRouter);
+app.use("/api/banners", bannerRoutes);
 app.use("/api/reviews", reviewAndCommentRoutes);
-
+app.use("/api/popular", popularRoutes);
+app.use("/api/ads-promotion-one", adsPromotionOneRoutes);
+app.use("/api/ads-promotion-two", adsPromotionTwoRoutes);
+app.use("/api/badge-app", badgeAppRoutes);
+app.use('/api/most-download', mostDownloadRoutes);
 
 app.get("/", (req, res) => {
   res.send("Apk Store Server Running...");

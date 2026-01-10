@@ -3,9 +3,11 @@ import Banner from "../../components/Banner/Banner";
 import TopApps from "../../components/TopApps/TopApps";
 import AllApps from "../../components/AllApps/AllApps";
 import PopularApps from "../../components/PopularApps/PopularApps";
-import TwoApps from "../../components/TwoApps/TwoApps";
-import PromoBanner from "../../components/PromoBanner/PromoBanner";
-import SingleApp from "../../components/SingleApp/SingleApp";
+import SingleApp from "../../components/MostDownloadPromotion/MostDownloadPromotion";
+import AdsPromotionOne from "../../components/AdsPromotionOne/AdsPromotionOne";
+import AdsPromotionTwo from "../../components/AdsPromotionTwo/AdsPromotionTwo";
+import BadgeApp from "../../components/BadgeApp/BadgeApp";
+import MostDownloadPromotion from "../../components/MostDownloadPromotion/MostDownloadPromotion";
 
 const Home = () => {
   return (
@@ -15,10 +17,10 @@ const Home = () => {
         <TopApps />
         <PopularApps />
         <AllApps />
-        <PromoBanner />
-        <TwoApps />
-        <SingleApp />
-        <PromoBanner />
+        <AdsPromotionOne />
+        <BadgeApp />
+        <MostDownloadPromotion />
+        <AdsPromotionTwo />
       </div>
     </>
   );
