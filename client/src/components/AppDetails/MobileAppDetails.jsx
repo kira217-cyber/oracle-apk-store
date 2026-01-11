@@ -244,7 +244,7 @@ const MobileAppDetails = () => {
       <div className="px-4 md:hidden">
         <div className="font-sans">
           <DataSafety apk={apk} />
-          <RatingsAndReviews appId={id} />
+          <RatingsAndReviews apkId={apk._id} />
         </div>
       </div>
 
@@ -320,8 +320,9 @@ const MobileAppDetails = () => {
         <h1 className="text-2xl font-bold">What’s new</h1>
         <p className="text-gray-500 text-sm mt-4">
           Last updated on {formatDate(apk.updatedAt)} <br />
-          {apk.fullAbout ||
-            "Bug fixes and performance improvements. Our continuous efforts are to improve and make the app more rewarding."}
+          {
+            "Bug fixes and performance improvements. Our continuous efforts are to improve and make the app more rewarding."
+          }
         </p>
       </div>
     </>

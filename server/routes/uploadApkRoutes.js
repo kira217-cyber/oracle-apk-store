@@ -18,7 +18,6 @@ const __dirname = path.dirname(__filename);
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadPath = path.join(__dirname, "../uploads");
-
     if (!fs.existsSync(uploadPath)) {
       fs.mkdirSync(uploadPath, { recursive: true });
     }
@@ -31,31 +30,23 @@ const storage = multer.diskStorage({
   },
 });
 
-// File filter: allow images, videos, and .apk files
+// File filter
 const fileFilter = (req, file, cb) => {
   const fieldName = file.fieldname;
-
   let allowed = false;
 
   if (fieldName === "apkFile") {
-    const ext = path.extname(file.originalname).toLowerCase();
-    if (ext === ".apk") {
-      allowed = true;
-    }
+    allowed = path.extname(file.originalname).toLowerCase() === ".apk";
   } else if (fieldName === "apkLogo" || fieldName === "screenshots") {
     const imageTypes = /jpeg|jpg|png|gif|webp/;
-    const extname = imageTypes.test(
-      path.extname(file.originalname).toLowerCase()
-    );
-    const mimetype = imageTypes.test(file.mimetype);
-    allowed = extname && mimetype;
+    allowed =
+      imageTypes.test(path.extname(file.originalname).toLowerCase()) &&
+      imageTypes.test(file.mimetype);
   } else if (fieldName === "uploadVideo") {
     const videoTypes = /mp4|avi|mov|mkv|webm/;
-    const extname = videoTypes.test(
-      path.extname(file.originalname).toLowerCase()
-    );
-    const mimetype = videoTypes.test(file.mimetype);
-    allowed = extname && mimetype;
+    allowed =
+      videoTypes.test(path.extname(file.originalname).toLowerCase()) &&
+      videoTypes.test(file.mimetype);
   }
 
   if (allowed) {
@@ -71,11 +62,11 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-// Multer config
+// Single Multer instance - most reliable approach
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 25 * 1024 * 1024 }, // 25MB per file
+  limits: { fileSize: 250 * 1024 * 1024 }, // 250 MB global limit (2026 realistic)
 });
 
 // Helper function
@@ -85,7 +76,6 @@ const generateApkId = (apkTitle) => {
     .trim()
     .replace(/\s+/g, "-")
     .replace(/[^a-z0-9-]/g, "");
-
   const randomNumber = Math.floor(100000 + Math.random() * 900000);
   return `${slug}-${randomNumber}`;
 };
@@ -99,10 +89,12 @@ router.post(
     { name: "apkFile", maxCount: 1 },
     { name: "screenshots", maxCount: 12 },
   ]),
+
   async (req, res) => {
     try {
       const data = { ...req.body };
 
+      // 1. Authentication check
       const userIdFromFrontend = data.user;
       if (!userIdFromFrontend) {
         return res.status(401).json({
@@ -112,7 +104,7 @@ router.post(
 
       data.user = userIdFromFrontend;
 
-      // Parse JSON-stringified arrays
+      // 2. Parse JSON-stringified arrays
       const arrayFields = [
         "tags",
         "childDataTypes",
@@ -129,22 +121,48 @@ router.post(
 
       arrayFields.forEach((field) => {
         if (data[field]) {
-          data[field] = JSON.parse(data[field]);
+          try {
+            data[field] = JSON.parse(data[field]);
+          } catch (e) {
+            console.warn(`Failed to parse ${field}:`, e.message);
+            data[field] = [];
+          }
         } else {
           data[field] = [];
         }
       });
 
-      // File paths
-      data.apkLogo = req.files["apkLogo"]
+      // 3. Convert string booleans / empty values → real booleans
+      // This solves the "Cast to Boolean failed for value ''" error
+      const booleanFields = [
+        'requiresGoogleRestrictions',
+        // ← add any other boolean fields from your form here in future
+      ];
+
+      booleanFields.forEach((field) => {
+        const value = data[field];
+
+        if (typeof value === 'string') {
+          const lower = value.trim().toLowerCase();
+          data[field] = lower === 'true' || lower === '1' || lower === 'yes';
+        } else if (value === true || value === 'true') {
+          data[field] = true;
+        } else {
+          // null, undefined, "", "false", "no", 0, etc. → false (schema default)
+          data[field] = false;
+        }
+      });
+
+      // 4. File paths
+      data.apkLogo = req.files["apkLogo"]?.[0]
         ? `/uploads/${req.files["apkLogo"][0].filename}`
         : null;
 
-      data.uploadVideo = req.files["uploadVideo"]
+      data.uploadVideo = req.files["uploadVideo"]?.[0]
         ? `/uploads/${req.files["uploadVideo"][0].filename}`
         : null;
 
-      data.apkFile = req.files["apkFile"]
+      data.apkFile = req.files["apkFile"]?.[0]
         ? `/uploads/${req.files["apkFile"][0].filename}`
         : null;
 
@@ -152,52 +170,78 @@ router.post(
         ? req.files["screenshots"].map((file) => `/uploads/${file.filename}`)
         : [];
 
-      // Validation
-      if (!data.apkLogo)
+      // 5. Business validation
+      if (!data.apkLogo) {
         return res.status(400).json({ error: "APK Logo is required" });
-      if (!data.apkFile)
-        return res.status(400).json({ error: "APK File is required" });
-      if (data.screenshots.length < 4 || data.screenshots.length > 12)
-        return res
-          .status(400)
-          .json({ error: "Must upload between 4 and 12 screenshots" });
-      if (data.tags.length < 5)
-        return res.status(400).json({ error: "Minimum 5 tags required" });
-      if (data.declarations.length !== 4)
-        return res
-          .status(400)
-          .json({ error: "All 4 declarations must be checked" });
+      }
 
-      // 🔥 Generate apk_Id
+      if (!data.apkFile) {
+        return res.status(400).json({ error: "APK File is required" });
+      }
+
+      if (data.screenshots.length < 4 || data.screenshots.length > 12) {
+        return res.status(400).json({
+          error: "Must upload between 4 and 12 screenshots",
+        });
+      }
+
+      if ((data.tags?.length || 0) < 5) {
+        return res.status(400).json({ error: "Minimum 5 tags required" });
+      }
+
+      if ((data.declarations?.length || 0) !== 4) {
+        return res.status(400).json({
+          error: "All 4 declarations must be checked",
+        });
+      }
+
+      // Optional: You can add more common-sense validations
+      if (!data.apkTitle?.trim()) {
+        return res.status(400).json({ error: "App title is required" });
+      }
+
+      // 6. Generate unique ID
       data.apk_Id = generateApkId(data.apkTitle);
 
+      // 7. Create & save document
       const newUpload = new UploadApk(data);
       await newUpload.save();
 
+      // 8. Success response
       res.status(201).json({
         message: "APK uploaded successfully!",
         apk: newUpload,
       });
     } catch (error) {
       console.error("Upload error:", error);
-      res.status(500).json({
-        error: "Failed to upload APK",
+
+      // Better error response for client
+      const status = error.name === "ValidationError" ? 400 : 500;
+      const message =
+        error.name === "ValidationError"
+          ? "Validation failed. Please check all required fields."
+          : "Failed to upload APK";
+
+      res.status(status).json({
+        error: message,
         details: error.message,
+        // Optional: in development you can send more info
+        // stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
       });
     }
   }
 );
 
-// GET: My uploaded APKs (by user ID from frontend or session if available)
+// ────────────────────────────────────────────────────────────────
+// The rest of your routes remain unchanged
+// ────────────────────────────────────────────────────────────────
+
 router.get("/my-apks", async (req, res) => {
   try {
-    // Try to get user ID from query (sent from frontend) or body
     const userId = req.query.user || req.body.user;
-
     if (!userId) {
       return res.status(401).json({ error: "User ID required" });
     }
-
     const apks = await UploadApk.find({ user: userId }).sort({ createdAt: -1 });
     res.json(apks);
   } catch (error) {
@@ -205,34 +249,26 @@ router.get("/my-apks", async (req, res) => {
   }
 });
 
-// GET: All public APKs
 router.get("/all-apks", async (req, res) => {
   try {
     const apks = await UploadApk.find({})
       .select("-permissionReason")
-      .populate("user", "name email") // Show uploader info
+      .populate("user", "name email")
       .sort({ createdAt: -1 });
-
     res.json(apks);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-
-// GET: Single APK by apk_Id
 router.get("/apk/:apkId", async (req, res) => {
   try {
     const { apkId } = req.params;
-
     const apk = await UploadApk.findOne({ apk_Id: apkId })
       .select("-permissionReason")
       .populate("user", "name email");
 
-    if (!apk) {
-      return res.status(404).json({ message: "APK not found" });
-    }
-
+    if (!apk) return res.status(404).json({ message: "APK not found" });
     res.json(apk);
   } catch (error) {
     console.error("Fetch APK error:", error);
@@ -240,16 +276,12 @@ router.get("/apk/:apkId", async (req, res) => {
   }
 });
 
-// GET: Admin - All APKs with search and filter
 router.get("/admin/apks", async (req, res) => {
   try {
     const { search = "", status = "pending" } = req.query;
-
     let query = {};
 
-    if (status && status !== "all") {
-      query.status = status;
-    }
+    if (status && status !== "all") query.status = status;
 
     if (search.trim()) {
       const developers = await Developer.find({
@@ -282,37 +314,30 @@ router.get("/admin/apks", async (req, res) => {
   }
 });
 
-// POST: Admin - Update status (with message and email)
 router.post("/admin/update-status/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, message } = req.body; // status: 'active'|'deactive'|'rejected'|'approved'
+    const { status, message } = req.body;
 
     if (!["active", "deactive", "rejected", "approved"].includes(status)) {
       return res.status(400).json({ error: "Invalid status" });
     }
 
     const apk = await UploadApk.findById(id).populate("user", "email name");
-    if (!apk) {
-      return res.status(404).json({ error: "APK not found" });
-    }
+    if (!apk) return res.status(404).json({ error: "APK not found" });
 
-    const oldStatus = apk.status;
-    apk.status = status === "approved" ? "active" : status; // approved → active
+    apk.status = status === "approved" ? "active" : status;
     apk.adminMessage = message || "";
 
     await apk.save();
 
-    // Send email to developer
-    if (apk.user && apk.user.email) {
+    if (apk.user?.email) {
       let subject = "";
       let text = `Hello ${apk.user.name || "Developer"},\n\nYour app "${
         apk.apkTitle
       }" status has been updated.\nNew Status: ${apk.status.toUpperCase()}\n`;
 
-      if (message) {
-        text += `\nAdmin Message: ${message}\n`;
-      }
+      if (message) text += `\nAdmin Message: ${message}\n`;
 
       if (status === "active" || status === "approved") {
         subject = "Your App Has Been Approved & Activated!";
@@ -330,15 +355,6 @@ router.post("/admin/update-status/:id", async (req, res) => {
     console.error(error);
     res.status(500).json({ error: error.message });
   }
-});
-
-// GET: My uploaded APKs
-router.get("/my-apks", async (req, res) => {
-  const userId = req.query.user;
-  if (!userId) return res.status(401).json({ error: "User ID required" });
-
-  const apks = await UploadApk.find({ user: userId }).sort({ createdAt: -1 });
-  res.json(apks);
 });
 
 export default router;

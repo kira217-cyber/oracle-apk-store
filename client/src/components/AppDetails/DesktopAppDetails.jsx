@@ -181,7 +181,7 @@ const DesktopAppDetails = () => {
                   <SwiperSlide key={index}>
                     <img
                       src={`${imageBase}${img}`}
-                      className="w-full h-40 md:h-80 object-cover rounded-xl"
+                      className="w-48 h-40 md:h-86 object-center rounded-xl"
                       alt={`Screenshot ${index + 1}`}
                     />
                   </SwiperSlide>
@@ -213,7 +213,7 @@ const DesktopAppDetails = () => {
                   {/* First tag as hashtag, rest as normal */}
                   {apk.tags?.length > 0 && (
                     <p className="text-gray-600 px-4 py-1 bg-white/70 rounded-full border-[1px] border-gray-500">
-                      #{apk.tags[2]}
+                      #{apk.tags[1]}
                     </p>
                   )}
                   <p className="text-gray-600 px-4 py-1 bg-white/70  rounded-full border-[1px] border-gray-500">
