@@ -18,6 +18,7 @@ import AdsPromotionTwoController from "../pages/AdsPromotionTwoController/AdsPro
 import AdsPromotionOneController from "../pages/AdsPromotionOneController/AdsPromotionOneController";
 import BadgeAppController from "../pages/BadgeAppController/BadgeAppController";
 import MostDownloadPromotionController from "../pages/MostDownloadPromotionController/MostDownloadPromotionController";
+import RatingsAndReviewsController from "../pages/RatingsAndReviewsController/RatingsAndReviewsController";
 
 export const routes = createBrowserRouter([
   {
@@ -144,6 +145,14 @@ export const routes = createBrowserRouter([
         element: (
           <PrivateRoute>
             <MostDownloadPromotionController></MostDownloadPromotionController>{" "}
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "promotions/ratings-reviews",
+        element: (
+          <PrivateRoute>
+            <RatingsAndReviewsController></RatingsAndReviewsController>{" "}
           </PrivateRoute>
         ),
       },

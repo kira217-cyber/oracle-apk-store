@@ -98,9 +98,9 @@ const BadgeApp = () => {
               )}
 
               {/* Content */}
-              <h3 className="text-white text-lg font-bold leading-tight drop-shadow-lg">
+              {/* <h3 className="text-white text-lg font-bold leading-tight drop-shadow-lg">
                 {app.title}
-              </h3>
+              </h3> */}
             </div>
 
             {/* App Info */}

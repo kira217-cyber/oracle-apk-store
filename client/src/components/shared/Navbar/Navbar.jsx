@@ -49,7 +49,7 @@ const Navbar = () => {
       {/* Top Helpline Bar */}
       <div className="hidden md:block w-full bg-green-900 text-white text-sm">
         <div className="max-w-7xl mx-auto px-4 py-2 text-start text-lg">
-          Helpline: inquiry@oraclestore.org
+          Helpline: {import.meta.env.VITE_HELPING_EMAIL}
         </div>
       </div>
 

@@ -48,6 +48,7 @@ const Sidebar = () => {
     { to: "/promotions/ads-two", text: "Ads Promotion Two" },
     { to: "/promotions/badge-app", text: "Badge App" },
     { to: "/promotions/most-download", text: "Most Download" },
+    { to: "/promotions/ratings-reviews", text: "Ratings and Reviews" },
   ];
 
   const handleLogout = () => {

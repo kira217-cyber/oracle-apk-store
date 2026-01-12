@@ -114,6 +114,7 @@ const DesktopAppDetails = () => {
 
   return (
     <>
+    
       <div className="hidden md:block w-full">
         <div className="max-w-7xl mx-auto px-4 py-8 flex items-start">
           {/* Left Section */}

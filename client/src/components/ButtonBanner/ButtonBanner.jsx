@@ -16,7 +16,7 @@ const ButtonBanner = () => {
 
           <div className="flex-1 rgb-badge text-white px-2 py-1 md:px-6 md:py-3 rounded-md font-bold shadow flex items-center justify-center">
             <span className="flex gap-2 items-center">
-              TOP APP <IoIosApps size={20} />
+               APPS <IoIosApps size={20} />
             </span>
           </div>
         </div>
@@ -54,7 +54,7 @@ const ButtonBanner = () => {
 
         <div className="flex-[2] rgb-badge text-white px-6 py-3 rounded-md font-bold shadow flex items-center justify-center">
           <span className="flex gap-2 items-center">
-            TOP APP <IoIosApps size={20} />
+            APPS <IoIosApps size={20} />
           </span>
         </div>
       </div>
