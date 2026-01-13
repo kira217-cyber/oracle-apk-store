@@ -22,6 +22,7 @@ import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import SimilarApp from "../SImilarApp/SimilarApp";
 import { toast } from "react-toastify";
+import { Helmet } from "react-helmet-async";
 
 // Helper to format date like "Dec 30, 2025"
 const formatDate = (dateString) => {
@@ -114,7 +115,10 @@ const DesktopAppDetails = () => {
 
   return (
     <>
-    
+    <Helmet>
+      <title>{apk.apkTitle}</title>
+      <meta name="description" content={apk.description} />
+    </Helmet>
       <div className="hidden md:block w-full">
         <div className="max-w-7xl mx-auto px-4 py-8 flex items-start">
           {/* Left Section */}

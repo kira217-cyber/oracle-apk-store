@@ -1,4 +1,4 @@
-// RatingsAndReviews.jsx - Fixed version using real _id (ObjectId)
+// RatingsAndReviews.jsx - Updated to show fakeUserName from admin fake reviews
 import React, { useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import {
@@ -80,16 +80,23 @@ const ReviewItem = ({ review, userData, currentUser }) => {
     },
   });
 
-  // Determine display name
+  // Determine display name - Updated to support fakeUserName
   let userName = "Anonymous User";
 
-  if (userData) {
+  // 1. Check if it's an admin fake review (highest priority)
+  if (review.fakeUserName && review.fakeUserName.trim()) {
+    userName = review.fakeUserName.trim();
+  }
+  // 2. If fetched user data exists (from separate /api/users/:id call)
+  else if (userData) {
     if (userData.name && userData.name.trim()) {
       userName = userData.name.trim();
     } else if (userData.email) {
       userName = userData.email.split("@")[0];
     }
-  } else if (review.userId && typeof review.userId === "object") {
+  }
+  // 3. If userId is already populated in the review object
+  else if (review.userId && typeof review.userId === "object") {
     if (review.userId.name && review.userId.name.trim()) {
       userName = review.userId.name.trim();
     } else if (review.userId.email) {
@@ -103,7 +110,9 @@ const ReviewItem = ({ review, userData, currentUser }) => {
         <div className="flex items-center gap-3">
           <FaUserCircle className="text-3xl text-gray-400 flex-shrink-0" />
           <div>
-            <p className="text-sm font-medium text-gray-800">{userName}</p>
+            <p className="text-sm font-medium text-gray-800">
+              {userName}
+            </p>
             <div className="flex items-center gap-1 mt-1">
               {[...Array(5)].map((_, i) => (
                 <FaStar
@@ -152,7 +161,6 @@ const ReviewItem = ({ review, userData, currentUser }) => {
 };
 
 const RatingsAndReviews = ({ apkId }) => {
-  // ← Changed prop name to apkId (recommended)
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [modalOpen, setModalOpen] = useState(false);
@@ -218,7 +226,7 @@ const RatingsAndReviews = ({ apkId }) => {
     if (!newRating) return toast.warn("Please select a rating");
 
     const payload = {
-      apkId, // ← Changed key to match backend recommendation
+      apkId,
       userId: user.id || user._id,
       rating: newRating,
       comment: newComment || undefined,
@@ -239,7 +247,6 @@ const RatingsAndReviews = ({ apkId }) => {
       </div>
     );
 
-  // Important: backend now returns { success: true, data: { reviews, average, total, distribution } }
   const reviewContent = reviewData?.data || reviewData || {};
   const average = reviewContent.average
     ? Number(reviewContent.average).toFixed(1)

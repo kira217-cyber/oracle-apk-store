@@ -66,7 +66,7 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 250 * 1024 * 1024 }, // 250 MB global limit (2026 realistic)
+  limits: { fileSize: 2 * 1024 * 1024 * 1024 }, // 2GB global limit (2026 realistic)
 });
 
 // Helper function
@@ -135,17 +135,17 @@ router.post(
       // 3. Convert string booleans / empty values → real booleans
       // This solves the "Cast to Boolean failed for value ''" error
       const booleanFields = [
-        'requiresGoogleRestrictions',
+        "requiresGoogleRestrictions",
         // ← add any other boolean fields from your form here in future
       ];
 
       booleanFields.forEach((field) => {
         const value = data[field];
 
-        if (typeof value === 'string') {
+        if (typeof value === "string") {
           const lower = value.trim().toLowerCase();
-          data[field] = lower === 'true' || lower === '1' || lower === 'yes';
-        } else if (value === true || value === 'true') {
+          data[field] = lower === "true" || lower === "1" || lower === "yes";
+        } else if (value === true || value === "true") {
           data[field] = true;
         } else {
           // null, undefined, "", "false", "no", 0, etc. → false (schema default)

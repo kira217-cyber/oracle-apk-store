@@ -4,22 +4,29 @@ const { Schema } = mongoose;
 
 const reviewSchema = new Schema(
   {
-    // Reference to the APK being reviewed
     apk_Id: {
-      type: Schema.Types.ObjectId, // Must be ObjectId
-      ref: "UploadApk", // Refers to the APK model
+      type: Schema.Types.ObjectId,
+      ref: "UploadApk",
       required: true,
-      index: true, // Optional: makes querying faster
+      index: true,
     },
 
-    // Reference to the user who submitted the review
+    // এখন required না — অ্যাডমিন fake review-এ null হতে পারে
     userId: {
-      type: Schema.Types.ObjectId, // Must be ObjectId
-      ref: "User", // Refers to the User model
-      required: true,
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: false, // ← এখানে পরিবর্তন
+      index: true,
     },
 
-    // Rating value
+    // নতুন ফিল্ড — শুধু fake review-এর জন্য
+    fakeUserName: {
+      type: String,
+      trim: true,
+      maxlength: 100,
+      default: null,
+    },
+
     rating: {
       type: Number,
       required: true,
@@ -27,30 +34,39 @@ const reviewSchema = new Schema(
       max: 5,
     },
 
-    // Optional text review
     comment: {
       type: String,
       trim: true,
     },
 
-    // Helpful count
     helpful: {
       type: Number,
       default: 0,
     },
 
-    // Track users who marked as helpful
     helpfulBy: [
       {
         type: Schema.Types.ObjectId,
         ref: "User",
       },
     ],
+
+    // অপশনাল: অ্যাডমিন যদি চায় তাহলে কে তৈরি করেছে সেটা ট্র্যাক করতে
+    createdByAdmin: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
 
-// Ensure 1 user can submit only 1 review per APK
-reviewSchema.index({ apk_Id: 1, userId: 1 }, { unique: true });
+// ইউনিক ইনডেক্স — শুধু আসল ইউজারের ক্ষেত্রে (userId null হলে ডুপ্লিকেট চেক করবে না)
+reviewSchema.index(
+  { apk_Id: 1, userId: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { userId: { $exists: true, $ne: null } },
+  }
+);
 
 export default mongoose.model("Review", reviewSchema);
