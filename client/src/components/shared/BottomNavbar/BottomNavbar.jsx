@@ -49,7 +49,7 @@ const BottomNavbar = () => {
 
   return (
     <div className="md:hidden">
-      <div className="fixed bottom-0 left-0 right-0 bg-gray-600 shadow-2xl py-3 z-50">
+      <div className="fixed bottom-0 left-0 right-0 bg-gray-600 shadow-2xl py-3 z-50 ">
         <div className="flex justify-around items-center">
           {navItems.map((item) => {
             if (item.private && !user) return null;
