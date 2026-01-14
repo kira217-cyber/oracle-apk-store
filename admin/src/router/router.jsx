@@ -85,8 +85,15 @@ export const routes = createBrowserRouter([
         path: "upload-apk",
         element: (
           <PrivateRoute>
-            {" "}
-            <UploadApk></UploadApk>{" "}
+            <UploadApk />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "update-apk/:id",
+        element: (
+          <PrivateRoute>
+            <UploadApk />
           </PrivateRoute>
         ),
       },

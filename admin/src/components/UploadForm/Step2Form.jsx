@@ -7,10 +7,11 @@ import { motion } from "framer-motion";
 import { useAuth } from "../../hooks/useAuth";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
+import { FaSyncAlt } from "react-icons/fa";
 
-const Step2Form = ({ formData, onBack }) => {
+const Step2Form = ({ formData, onBack, isUpdate = false, apkId }) => {
   const { user } = useAuth();
-  const userId = user?.id;
+  const userId = user?.id || user?._id;
   const navigate = useNavigate();
 
   const {
@@ -53,20 +54,32 @@ const Step2Form = ({ formData, onBack }) => {
     mutationFn: async (finalData) => {
       const formDataToSend = new FormData();
 
-      Object.keys(finalData).forEach((key) => {
-        if (key === "screenshots") {
-          finalData.screenshots.forEach((file) =>
-            formDataToSend.append("screenshots", file)
-          );
-        } else if (
-          ["apkLogo", "apkFile", "uploadVideo"].includes(key) &&
-          finalData[key]
-        ) {
-          formDataToSend.append(key, finalData[key]);
-        } else if (Array.isArray(finalData[key])) {
-          formDataToSend.append(key, JSON.stringify(finalData[key]));
+      // Start with old formData (important for update!)
+      const mergedData = { ...formData, ...finalData };
+
+      Object.keys(mergedData).forEach((key) => {
+        const value = mergedData[key];
+
+        if (key === "screenshots" && Array.isArray(value)) {
+          value.forEach((file) => {
+            // If it's a File → append file
+            // If it's string (old URL) → append as string (backend will ignore)
+            if (file instanceof File) {
+              formDataToSend.append("screenshots", file);
+            } else if (typeof file === "string") {
+              formDataToSend.append("screenshots[]", file); // backend can detect URLs
+            }
+          });
+        } else if (["apkLogo", "uploadVideo", "apkFile"].includes(key)) {
+          if (value instanceof File) {
+            formDataToSend.append(key, value);
+          } else if (typeof value === "string") {
+            formDataToSend.append(key, value); // send old URL
+          }
+        } else if (Array.isArray(value)) {
+          formDataToSend.append(key, JSON.stringify(value));
         } else {
-          formDataToSend.append(key, finalData[key] || "");
+          formDataToSend.append(key, value ?? "");
         }
       });
 
@@ -74,33 +87,42 @@ const Step2Form = ({ formData, onBack }) => {
         formDataToSend.append("user", userId);
       }
 
-      return axios.post(
-        `${import.meta.env.VITE_API_URL}/api/upload-apk`,
-        formDataToSend,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
+      const url = isUpdate
+        ? `${import.meta.env.VITE_API_URL}/api/upload-apk/${apkId}`
+        : `${import.meta.env.VITE_API_URL}/api/upload-apk`;
+
+      return axios({
+        method: isUpdate ? "put" : "post",
+        url,
+        data: formDataToSend,
+        headers: { "Content-Type": "multipart/form-data" },
+      });
     },
+
     onMutate: () => {
-      toast.info("Submitting your APK for review...", {
-        toastId: "upload-pending",
+      toast.info("Submitting your APK changes...", {
+        toastId: "submit-pending",
         autoClose: false,
         closeOnClick: false,
         draggable: false,
       });
     },
-    onSuccess: () => {
-      toast.dismiss("upload-pending");
 
-      // Success toast with pending status message
+    onSuccess: () => {
+      toast.dismiss("submit-pending");
+
       toast.success(
         <>
-          <strong>APK Submitted Successfully! 🚀</strong>
+          <strong>
+            {isUpdate
+              ? "APK Updated Successfully! 🚀"
+              : "APK Submitted Successfully! 🚀"}
+          </strong>
           <br />
           <span className="text-sm">
-            Your app is now under review. Current status:{" "}
-            <strong className="text-orange-300">Pending</strong>
+            {isUpdate
+              ? "Your changes are submitted. Status: Pending (under review)"
+              : "Your app is now under review. Current status: Pending"}
           </span>
         </>,
         {
@@ -110,27 +132,26 @@ const Step2Form = ({ formData, onBack }) => {
         }
       );
 
-      // Navigate to My Apps page after a short delay
+      // Navigate to My Apps after delay
       setTimeout(() => {
-        navigate("/my-apps"); // Change this if your route is different (e.g., "/my-apks")
-      }, 1000);
+        navigate("/my-apps");
+      }, 1500);
     },
+
     onError: (err) => {
-      toast.dismiss("upload-pending");
+      toast.dismiss("submit-pending");
       const errorMessage =
         err.response?.data?.error ||
         err.response?.data?.message ||
         err.message ||
-        "Upload failed. Please try again.";
-      toast.error(`Upload Failed: ${errorMessage}`, { autoClose: 6000 });
+        "Submission failed. Please try again.";
+      toast.error(`Failed: ${errorMessage}`, { autoClose: 6000 });
     },
   });
 
   const onSubmit = (data) => {
     if (!userId) {
-      toast.error("You must be logged in to publish an APK!", {
-        autoClose: 4000,
-      });
+      toast.error("You must be logged in to submit!", { autoClose: 4000 });
       return;
     }
 
@@ -170,7 +191,9 @@ const Step2Form = ({ formData, onBack }) => {
       className="bg-gray-900/80 backdrop-blur-xl rounded-3xl p-8 md:p-12 shadow-2xl border border-orange-800/40"
     >
       <h2 className="text-4xl md:text-5xl font-extrabold mb-10 text-center bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
-        Step 2 – Data Safety & Developer Declaration
+        {isUpdate
+          ? "Update Data Safety & Declaration – Step 2"
+          : "Step 2 – Data Safety & Developer Declaration"}
       </h2>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
@@ -750,7 +773,7 @@ const Step2Form = ({ formData, onBack }) => {
           )}
         </div>
 
-        {/* Developer Declaration – Shortened */}
+        {/* Developer Declaration */}
         <div>
           <label className="block text-2xl font-bold text-orange-300 mb-6">
             🔒 Developer Declaration
@@ -824,14 +847,15 @@ const Step2Form = ({ formData, onBack }) => {
           >
             {mutation.isPending ? (
               <>
-                <span className="opacity-0">Submit for Review</span>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-10 h-10 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
-                </div>
-                <span className="absolute inset-0 flex items-center justify-center text-lg">
-                  Submitting for Review...
+                <span className="opacity-0">
+                  {isUpdate ? "Updating..." : "Submitting..."}
                 </span>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <FaSyncAlt className="animate-spin text-white text-3xl" />
+                </div>
               </>
+            ) : isUpdate ? (
+              "Save Changes & Submit"
             ) : (
               "Submit for Review"
             )}

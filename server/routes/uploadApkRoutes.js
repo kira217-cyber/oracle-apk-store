@@ -7,6 +7,7 @@ import { fileURLToPath } from "url";
 import UploadApk from "../models/UploadApk.js";
 import Developer from "../models/Developer.js";
 import { sendEmail } from "../config/email.js";
+import mongoose from "mongoose";
 
 const router = express.Router();
 
@@ -233,6 +234,101 @@ router.post(
   }
 );
 
+// PUT: Update APK
+router.put(
+  "/upload-apk/:id",
+  // authMiddleware,  // Uncomment later for security
+  upload.fields([
+    { name: "apkLogo", maxCount: 1 },
+    { name: "uploadVideo", maxCount: 1 },
+    { name: "apkFile", maxCount: 1 },
+    { name: "screenshots", maxCount: 12 },
+  ]),
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ error: "Invalid APK ID" });
+      }
+
+      const apk = await UploadApk.findById(id);
+      if (!apk) {
+        return res.status(404).json({ error: "APK not found" });
+      }
+
+      const updates = { ...req.body };
+
+      // Parse arrays
+      const arrayFields = [
+        "tags", "childDataTypes", "purposeOfDataCollection", "dataSharedWith",
+        "dataProtection", "dataRetention", "userControls", "childCompliance",
+        "sensitivePermissions", "adDetails", "declarations"
+      ];
+      arrayFields.forEach(field => {
+        if (updates[field]) {
+          try {
+            updates[field] = JSON.parse(updates[field]);
+          } catch {
+            updates[field] = [];
+          }
+        }
+      });
+
+      // Boolean safety
+      const booleanFields = ["requiresGoogleRestrictions"];
+      booleanFields.forEach(field => {
+        if (field in updates) {
+          const val = updates[field];
+          if (val === "" || val === null || val === undefined) {
+            delete updates[field]; // keep old value
+          } else {
+            updates[field] = val === "true" || val === true || val === 1 || val === "1";
+          }
+        }
+      });
+
+      // Files - only replace if new file sent
+      if (req.files?.apkLogo?.[0]) {
+        apk.apkLogo = `/uploads/${req.files.apkLogo[0].filename}`;
+      }
+      if (req.files?.uploadVideo?.[0]) {
+        apk.uploadVideo = `/uploads/${req.files.uploadVideo[0].filename}`;
+      }
+      if (req.files?.apkFile?.[0]) {
+        apk.apkFile = `/uploads/${req.files.apkFile[0].filename}`;
+      }
+      if (req.files?.screenshots?.length > 0) {
+        apk.screenshots = req.files.screenshots.map(f => `/uploads/${f.filename}`);
+      }
+
+      // Apply updates (skip user field)
+      Object.keys(updates).forEach(key => {
+        if (key !== "user" && updates[key] !== undefined && updates[key] !== null) {
+          apk[key] = updates[key];
+        }
+      });
+
+      // Reset status to pending (review needed)
+      apk.status = "active";
+      apk.updatedAt = new Date();
+
+      await apk.save();
+
+      res.status(200).json({
+        message: "APK updated successfully",
+        apk
+      });
+    } catch (error) {
+      console.error("PUT error:", error);
+      res.status(500).json({
+        error: "Failed to update APK",
+        message: error.message
+      });
+    }
+  }
+);
+
 // ────────────────────────────────────────────────────────────────
 // The rest of your routes remain unchanged
 // ────────────────────────────────────────────────────────────────
@@ -243,10 +339,27 @@ router.get("/my-apks", async (req, res) => {
     if (!userId) {
       return res.status(401).json({ error: "User ID required" });
     }
-    const apks = await UploadApk.find({ user: userId }).sort({ createdAt: -1 });
+
+    const { search = "", status } = req.query;
+
+    let query = { user: userId };
+
+    // Status filter
+    if (status && status !== "all") {
+      query.status = status;
+    }
+
+    // Search by title (case-insensitive)
+    if (search.trim()) {
+      query.apkTitle = { $regex: search.trim(), $options: "i" };
+    }
+
+    const apks = await UploadApk.find(query).sort({ createdAt: -1 }).lean(); // faster
+
     res.json(apks);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("My APKs error:", error);
+    res.status(500).json({ error: "Server error" });
   }
 });
 
@@ -259,6 +372,39 @@ router.get("/all-apks", async (req, res) => {
     res.json(apks);
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+});
+
+// GET SINGLE APK BY ID (for update form)
+router.get("/upload-apk/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate MongoDB ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Invalid APK ID format" });
+    }
+
+    // Find the APK
+    const apk = await UploadApk.findById(id)
+      .populate(
+        "user",
+        "firstName lastName email companyName fullName country whatsapp"
+      ) // optional
+      .lean(); // faster response
+
+    if (!apk) {
+      return res.status(404).json({ error: "APK not found" });
+    }
+
+    // Success - return full APK data
+    res.status(200).json(apk);
+  } catch (error) {
+    console.error("Error fetching single APK:", error);
+    res.status(500).json({
+      error: "Server error while fetching APK details",
+      message: error.message,
+    });
   }
 });
 

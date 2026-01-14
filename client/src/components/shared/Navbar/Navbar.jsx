@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import logo from "/logo.png";
 import { FaTelegram, FaWhatsappSquare } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
+import SupportSection from "../../SupportSection/SupportSection";
 
 const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -29,23 +30,7 @@ const Navbar = () => {
     navigate("/");
   };
 
-  const handleWhatsApp = () => {
-    // 👉 নিজের WhatsApp number
-    const url = `https://wa.me/+447877195509`;
-    window.open(url, "_blank");
-  };
-
-  const handleTelegram = () => {
-    // 👉 নিজের Telegram username
-    const url = `https://t.me/oraclesoftworld`;
-    window.open(url, "_blank");
-  };
-
-  const handleEmail = () => {
-    // 👉 নিজের WhatsApp number
-    const url = "mailto:oraclesoft.org@gmail.com";
-    window.open(url, "_blank");
-  };
+ 
 
   const handleBecomeDeveloper = () => {
     setDropdownOpen(false);
@@ -69,26 +54,7 @@ const Navbar = () => {
     <>
       {/* Top Helpline Bar */}
       <div className="hidden md:block w-full bg-green-900 text-white text-sm">
-        <div className="flex justify-start gap-1 max-w-7xl mx-auto">
-         <button
-            onClick={handleWhatsApp}
-            className=" px-4 py-2 cursor-pointer text-start text-lg font-bold"
-          >
-            <FaWhatsappSquare size={24} />
-          </button>
-          <button
-            onClick={handleEmail}
-            className=" px-4 py-2 cursor-pointer text-start text-lg font-bold"
-          >
-            <MdEmail size={24} />
-          </button>
-          <button
-            onClick={handleTelegram}
-            className=" px-4 py-2 cursor-pointer text-start text-lg font-bold"
-          >
-            <FaTelegram size={24} />
-          </button>
-        </div>
+        <SupportSection />
       </div>
 
       {/* Main Navbar */}

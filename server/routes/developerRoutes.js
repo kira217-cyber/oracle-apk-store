@@ -132,6 +132,81 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+// PUT /api/developer/:id   ← update own profile
+router.put("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ success: false, message: "Invalid Developer ID" });
+    }
+
+    // In real app → you should also check that req.user._id === id  (JWT auth middleware)
+    // For now assuming you protect this route with auth middleware
+
+    const updateData = {
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      email: req.body.email,
+      accountType: req.body.accountType,
+      companyName: req.body.companyName || "",
+      fullName: req.body.fullName || "",
+      country: req.body.country,
+      whatsapp: req.body.whatsapp,
+      website: req.body.website || "",
+      // password: DO NOT allow password update here (separate endpoint later)
+    };
+
+    // Remove undefined / empty fields if you want (optional)
+    Object.keys(updateData).forEach(
+      (key) => updateData[key] === undefined && delete updateData[key]
+    );
+
+    const developer = await Developer.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    ).select("-password");
+
+    if (!developer) {
+      return res.status(404).json({ success: false, message: "Developer not found" });
+    }
+
+    res.json({
+      success: true,
+      message: "Profile updated successfully",
+      developer: {
+        id: developer._id,
+        firstName: developer.firstName,
+        lastName: developer.lastName,
+        email: developer.email,
+        accountType: developer.accountType,
+        companyName: developer.companyName,
+        fullName: developer.fullName,
+        country: developer.country,
+        whatsapp: developer.whatsapp,
+        website: developer.website,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    if (err.name === "ValidationError") {
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        errors: err.errors,
+      });
+    }
+    if (err.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: "Email already in use",
+      });
+    }
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
 // UPDATE DEVELOPER STATUS (Accept/Reject/Active/Deactive)
 router.put("/:id/status", async (req, res) => {
   try {
