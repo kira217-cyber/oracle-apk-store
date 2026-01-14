@@ -36,7 +36,8 @@ const fileFilter = (req, file, cb) => {
   let allowed = false;
 
   if (fieldName === "apkFile") {
-    allowed = path.extname(file.originalname).toLowerCase() === ".apk";
+    const ext = path.extname(file.originalname).toLowerCase();
+    allowed = ext === ".apk" || ext === ".ipa";
   } else if (fieldName === "apkLogo" || fieldName === "screenshots") {
     const imageTypes = /jpeg|jpg|png|gif|webp/;
     allowed =
