@@ -28,7 +28,7 @@ const BottomNavbar = () => {
       to: "/search",
       icon: <FaSearch size={22} />,
       private: false,
-      disabled: true,
+      disabled: false, // ✅ Search active
     },
     {
       id: 3,

@@ -367,7 +367,7 @@ router.get("/all-apks", async (req, res) => {
   try {
     const apks = await UploadApk.find({})
       .select("-permissionReason")
-      .populate("user", "name email")
+      .populate("user", "name email firstName")
       .sort({ createdAt: -1 });
     res.json(apks);
   } catch (error) {
