@@ -60,7 +60,7 @@ const AllApk = () => {
 
         if (apk.user && typeof apk.user === "object") {
           developerDetails = {
-            fullName: apk.user.fullName?.trim() || "Unknown Developer",
+            fullName: apk.user.companyName || "Unknown Developer",
             email: apk.user.email || "N/A",
             companyName: apk.user.companyName?.trim() || "N/A",
             country: apk.user.country || "N/A",

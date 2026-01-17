@@ -78,21 +78,25 @@ router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({ success: false, message: "Email and password required" });
+    return res
+      .status(400)
+      .json({ success: false, message: "Email and password required" });
   }
 
   try {
     const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) {
-      return res.status(400).json({ success: false, message: "Invalid email or password" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid email or password" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ success: false, message: "Invalid email or password" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid email or password" });
     }
-
-
 
     res.status(200).json({
       success: true,
@@ -104,6 +108,60 @@ router.post("/login", async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// PUT /api/users/profile
+router.put("/profile", async (req, res) => {
+  const { name, email, password, currentEmail } = req.body;
+
+  try {
+    // find user by current email (logged-in user)
+    const user = await User.findOne({ email: currentEmail });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // update name
+    if (name) {
+      user.name = name.trim();
+    }
+
+    // update email
+    if (email && email !== user.email) {
+      const emailExists = await User.findOne({ email });
+      if (emailExists) {
+        return res.status(400).json({ message: "Email already in use" });
+      }
+      user.email = email.toLowerCase().trim();
+    }
+
+    // update password
+    if (password) {
+      if (password.length < 6) {
+        return res
+          .status(400)
+          .json({ message: "Password must be at least 6 characters" });
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(password, salt);
+    }
+
+    await user.save();
+
+    res.json({
+      success: true,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    console.error("Profile update error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 });
 

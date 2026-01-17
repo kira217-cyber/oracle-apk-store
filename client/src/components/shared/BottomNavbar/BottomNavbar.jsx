@@ -43,7 +43,7 @@ const BottomNavbar = () => {
       to: "/profile",
       icon: <FaUser size={22} />,
       private: true,
-      disabled: true,
+      disabled: false, // ✅ Profile active
     },
   ];
 

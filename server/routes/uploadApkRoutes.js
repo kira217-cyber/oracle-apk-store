@@ -375,6 +375,26 @@ router.get("/all-apks", async (req, res) => {
   }
 });
 
+// GET /api/apks/search?q=query
+router.get('/search', async (req, res) => {
+  try {
+    const { q } = req.query;
+    if (!q || q.length < 2) return res.json([]);
+
+    const apps = await UploadApk
+      .find(
+        { apkTitle: { $regex: q, $options: 'i' } }, // case-insensitive partial match
+        'apk_Id apkTitle apkLogo' // only needed fields
+      )
+      .limit(10)
+      .lean();
+
+    res.json(apps);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // GET SINGLE APK BY ID (for update form)
 router.get("/upload-apk/:id", async (req, res) => {
   try {
@@ -413,7 +433,7 @@ router.get("/apk/:apkId", async (req, res) => {
     const { apkId } = req.params;
     const apk = await UploadApk.findOne({ apk_Id: apkId })
       .select("-permissionReason")
-      .populate("user", "name email");
+      .populate("user", "firstName lastName email");
 
     if (!apk) return res.status(404).json({ message: "APK not found" });
     res.json(apk);

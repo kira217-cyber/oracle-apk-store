@@ -7,6 +7,7 @@ import logo from "/logo.png";
 import { FaTelegram, FaWhatsappSquare } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import SupportSection from "../../SupportSection/SupportSection";
+import SearchBar from "../../SearchBar/SearchBar";
 
 const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -110,15 +111,7 @@ const Navbar = () => {
             </div>
 
             {/* Desktop Search Bar */}
-            <div className="hidden md:flex items-center bg-gray-100 rounded-full px-5 py-2 w-94 mx-2">
-              <Mic size={20} className="text-gray-500 mr-3 cursor-pointer" />
-              <input
-                type="text"
-                placeholder="Search apps..."
-                className="flex-1 bg-transparent outline-none text-base"
-              />
-              <Search size={22} className="text-gray-500 cursor-pointer ml-3" />
-            </div>
+            <SearchBar />
 
             {/* Right Side: User State */}
             <div className="flex items-center gap-5" ref={dropdownRef}>

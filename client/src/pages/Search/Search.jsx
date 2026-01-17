@@ -14,6 +14,7 @@ const Search = () => {
   const getRandomRating = () => (Math.random() * 1.5 + 3.5).toFixed(1); // 3.5 to 5.0
   const getRandomLeft = () => Math.floor(Math.random() * 20) + 1; // 1 to 20
   const getRandomPrice = () => (Math.random() * 80 + 10).toFixed(1); // $10 to $90
+  
   const getRandomBadge = () => {
     const badges = ["New", "Hot", "Sale", "Trending", null];
     return badges[Math.floor(Math.random() * badges.length)];

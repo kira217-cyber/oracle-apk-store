@@ -13,6 +13,7 @@ import Download from "../pages/Download/Download";
 import MyApps from "../pages/MyApps/MyApps";
 import AppDetails from "../pages/AppDetails/AppDetails";
 import PrivateRoute from "../PrivetRoute/PrivetRoute";
+import SearchComponent from "../components/SearchBar/SearchComponent";
 
 export const routes = createBrowserRouter([
   {
@@ -32,6 +33,7 @@ export const routes = createBrowserRouter([
       { path: "search", element: <Search /> },
       { path: "download", element: <Download /> },
       { path: "profile", element: <Profile /> },
+      { path: "search-app/:apkId", element: <SearchComponent /> },
       { path: "my-apps", element: <MyApps /> },
       {
         path: "app-details/:id",
