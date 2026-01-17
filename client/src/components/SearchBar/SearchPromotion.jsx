@@ -1,54 +1,80 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router"; // ← added for navigation
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import { FaChevronLeft, FaChevronRight, FaStar } from "react-icons/fa";
+
 import "swiper/css";
 import "swiper/css/navigation";
 
-const appList = [
-  {
-    id: 1,
-    title: "Discover from Facebook",
-    company: "Meta Platforms, Inc.",
-    rating: 4.1,
-    banner:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/512px-Facebook_f_logo_%282019%29.svg.png",
-    logo: "https://i.ibb.co.com/Z6P1k04z/unnamed-3.webp",
-  },
-  {
-    id: 2,
-    title: "Workplace from Meta",
-    company: "Meta Platforms, Inc.",
-    rating: 4.6,
-    banner: "https://i.ibb.co.com/Z6P1k04z/unnamed-3.webp",
-    logo: "https://i.ibb.co.com/Z6P1k04z/unnamed-3.webp",
-  },
-  {
-    id: 3,
-    title: "Meta Business Suite",
-    company: "Meta Platforms, Inc.",
-    rating: 4.5,
-    banner: "https://upload.wikimedia.org/wikipedia/commons/a/ab/Meta-Logo.png",
-    logo: "https://i.ibb.co.com/Z6P1k04z/unnamed-3.webp",
-  },
-  {
-    id: 4,
-    title: "Meta Ads Manager",
-    company: "Meta Platforms, Inc.",
-    rating: 4.3,
-    banner: "https://upload.wikimedia.org/wikipedia/commons/a/ab/Meta-Logo.png",
-    logo: "https://i.ibb.co.com/Z6P1k04z/unnamed-3.webp",
-  },
-];
-
 const SearchPromotion = () => {
+  const [apps, setApps] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const navigate = useNavigate(); // ← hook for navigation
+
+  useEffect(() => {
+    const fetchApks = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/all-apks`,
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Show most recent 10 apps (you can change to 8, 12, etc.)
+        const recentApps = data.slice(0, 10);
+
+        setApps(recentApps);
+      } catch (err) {
+        console.error("Failed to load promoted apps:", err);
+        setError("Could not load apps");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchApks();
+  }, []);
+
+  // Navigate to app details when clicking a card
+  const handleAppClick = (apkId) => {
+    if (apkId) {
+      navigate(`/app-details/${apkId}`);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="hidden lg:block max-w-7xl mx-auto px-6 py-12 relative">
+        <div className="text-center py-10 text-gray-500">
+          Loading featured apps...
+        </div>
+      </div>
+    );
+  }
+
+  if (error || apps.length === 0) {
+    return (
+      <div className="hidden lg:block max-w-7xl mx-auto px-6 py-12 relative">
+        <div className="text-center py-10 text-gray-600">
+          {error || "No apps available at the moment"}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="hidden lg:block max-w-7xl mx-auto px-6 py-12 relative">
-      {/* NAV BUTTONS */}
+      {/* NAV BUTTONS – added cursor-pointer */}
       <button className="promo-prev cursor-pointer absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white w-10 h-10 flex items-center justify-center rounded-full shadow hover:bg-gray-100">
         <FaChevronLeft />
       </button>
-
       <button className="promo-next cursor-pointer absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white w-10 h-10 flex items-center justify-center rounded-full shadow hover:bg-gray-100">
         <FaChevronRight />
       </button>
@@ -63,30 +89,46 @@ const SearchPromotion = () => {
           nextEl: ".promo-next",
         }}
       >
-        {appList.map((app) => (
-          <SwiperSlide key={app.id}>
-            <div className="bg-gray-50/50 cursor-pointer rounded-xl p-4 shadow-sm hover:shadow-md transition h-full">
-              {/* BANNER */}
-              <div className="h-50 bg-white rounded-lg flex items-center justify-center">
+        {apps.map((app) => (
+          <SwiperSlide key={app._id || app.apk_Id}>
+            <div
+              className="bg-gray-50/50 cursor-pointer rounded-xl p-4 shadow-sm hover:shadow-md transition h-full"
+              onClick={() => handleAppClick(app.apk_Id)}
+            >
+              {/* BANNER / Cover image */}
+              <div className="h-50 bg-white rounded-lg flex items-center justify-center overflow-hidden cursor-pointer">
                 <img
-                  src={app.banner}
-                  alt={app.title}
+                  src={`${import.meta.env.VITE_API_URL}${app.apkLogo}`}
+                  alt={app.apkTitle}
                   className="max-h-24 object-contain"
+                  onError={(e) => {
+                    e.target.src =
+                      "https://via.placeholder.com/300x120?text=App+Cover";
+                  }}
                 />
               </div>
 
               {/* INFO */}
-              <div className="flex items-start gap-3 mt-4">
+              <div className="flex items-start gap-3 mt-4 cursor-pointer">
                 <img
-                  src={app.logo}
-                  alt={app.title}
-                  className="w-14 h-14 rounded-sm"
+                  src={`${import.meta.env.VITE_API_URL}${app.apkLogo}`}
+                  alt={app.apkTitle}
+                  className="w-14 h-14 rounded-sm object-cover"
+                  onError={(e) => {
+                    e.target.src = "https://via.placeholder.com/56?text=App";
+                  }}
                 />
                 <div>
-                  <h3 className="font-semibold text-sm">{app.title}</h3>
-                  <p className="text-xs text-gray-500">{app.company}</p>
+                  <h3 className="font-semibold text-sm">{app.apkTitle}</h3>
+                  <p className="text-xs text-gray-500">
+                    {app.user?.name ||
+                      app.user?.firstName ||
+                      app.user?.email ||
+                      "Developer"}
+                  </p>
                   <div className="flex items-center gap-1 text-xs text-gray-600 mt-1">
-                    <span>{app.rating}</span>
+                    {/* Placeholder rating – change to real value when you add it */}
+                    <span>4.3</span>
                     <FaStar className="text-yellow-400" />
                   </div>
                 </div>
